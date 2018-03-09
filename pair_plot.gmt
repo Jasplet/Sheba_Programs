@@ -1,0 +1,36 @@
+#! /bin/bash
+############# Program: Pair_plot.gmt ############
+# This program takes a SDB file of SKS SKKS pairs and their corresponding
+# SKS & SKKS pierce points and plots them on a map using GMT5
+############# Author: Joseph Asplet ##############
+##################################################
+############# Required Arguements ################
+#SDB=$1 # The SDB file containng SKS/SKKS pairs
+PP=$1 # the .pp ans .mspp file containingthe pierce points for SKS and SKKS (Order should be Lon SKKS Lat SKKS Lon SKS Lat SKS)
+
+# Set GMT variables
+area=-R0/360/-70/70
+proj=-Jm1:1.75e8
+outfile="piercepoints_plot"
+
+
+psbasemap $proj $area -Bafg -BWESN+t'Pierce points plot' -K > $outfile.ps
+#Plot Coastline
+pscoast $area $proj -Ggrey -Dc -W0.5p -N1 -K -O >> $outfile.ps
+#plot stations
+tail -n +2 $PP.pp | awk '{print $5, $4 }' |\
+    psxy $area $proj -O -K -Si0.2 -Gred -W0.2p >> $outfile.ps
+#plot events
+tail -n +2 $PP.pp | awk '{print $7, $6 }' |\
+    psxy $area $proj -O -K -Sh0.2 -Gblack -W0.2p >> $outfile.ps
+
+awk '{print $19, $20}' $PP.pp| psxy $area $proj -O -K -Sc0.15 -Gblue -W0.2p  >> $outfile.ps
+awk '{print $17, $18}' $PP.pp | psxy $area $proj -O -K -Sc0.15 -Ggreen -W0.2p >> $outfile.ps
+
+psxy $area $proj -O -K -W0.4p < $PP.mspp >> $outfile.ps
+
+awk '{print }'
+
+#Convert outfile to PDF so it will update in the same pane in Preview
+ps2pdf $outfile.ps > $outfile.pdf
+open $outfile.pdf
