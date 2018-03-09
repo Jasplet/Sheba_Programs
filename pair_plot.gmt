@@ -14,22 +14,25 @@ proj=-Jm1:1.75e8
 outfile="piercepoints_plot"
 
 
-psbasemap $proj $area -Bafg -BWESN+t'Pierce points plot' -K > $outfile.ps
+psbasemap $proj $area -Bafg -BWESN+t'Pierce points plot' -K -U > $outfile.ps
 #Plot Coastline
-pscoast $area $proj -Ggrey -Dc -W0.5p -N1 -K -O >> $outfile.ps
+pscoast $area $proj -Ggrey -Di -W0.5p -N1 -K -O -A5e4 >> $outfile.ps
 #plot stations
 tail -n +2 $PP.pp | awk '{print $5, $4 }' |\
     psxy $area $proj -O -K -Si0.2 -Gred -W0.2p >> $outfile.ps
 #plot events
 tail -n +2 $PP.pp | awk '{print $7, $6 }' |\
-    psxy $area $proj -O -K -Sh0.2 -Gblack -W0.2p >> $outfile.ps
+    psxy $area $proj -O -K -Sc0.2 -Gblack -W0.2p >> $outfile.ps
 
-awk '{print $19, $20}' $PP.pp| psxy $area $proj -O -K -Sc0.15 -Gblue -W0.2p  >> $outfile.ps
-awk '{print $17, $18}' $PP.pp | psxy $area $proj -O -K -Sc0.15 -Ggreen -W0.2p >> $outfile.ps
-
+#Plot SKS and SKKS exits points (SKS=blue, SKKS = green)
+awk '{print $17,$18}' $PP.pp | psxy $area $proj -O -K -Sc0.1c -Gblue -W0.2p >> $outfile.ps
+awk '{print $19,$20}' $PP.pp | psxy $area $proj -O -K -Sc0.1c -Ggreen -W0.2p >> $outfile.ps
+## Draw a line between each pair of SKS SKKS exit points
 psxy $area $proj -O -K -W0.4p < $PP.mspp >> $outfile.ps
+# Plot SKS and SKKS splitting as vectors at the corresponding exit points from the core. Rotation from N represents fast direction and length is proportional to TLAG
+awk '{print $17, $18, $9, 0.2*$11}' $PP.pp| psxy $area $proj -O -K -SV0.1  -W1p,blue  >> $outfile.ps
+awk '{print $19, $20, $13,0.2*$15}' $PP.pp | psxy $area $proj -O -K -SV0.1  -W1p,green >> $outfile.ps
 
-awk '{print }'
 
 #Convert outfile to PDF so it will update in the same pane in Preview
 ps2pdf $outfile.ps > $outfile.pdf
