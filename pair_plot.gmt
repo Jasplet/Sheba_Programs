@@ -30,13 +30,12 @@ awk '{print $19,$20}' $PP.pp | psxy $area $proj -O -K -Sc0.1c -Ggreen -W0.2p >> 
 ## Draw a line between each pair of SKS SKKS exit points
 psxy $area $proj -O -K -W0.4p < $PP.mspp >> $outfile.ps
 # Plot SKS and SKKS splitting as vectors at the corresponding exit points from the core. Rotation from N represents fast direction and length is proportional to TLAG
-while read line
-do
-
-    echo $line | awk '{ lbf=($9-$10);ubf=($9+$10);lbt=($11-$12);ubt=($11+$12); if ($9<lbf || $9>ubf || $11<lbt || $11>ubt) print $17, $18, $9, 0.2*$11}' | psxy $area $proj -O -K -SV0.1 -W1p,green  >> $outfile.ps
-    echo $line | awk '{ lbf=($9-$10);ubf=($9+$10);lbt=($11-$12);ubt=($11+$12); if ($9<lbf || $9>ubf || $11><lbt || $11>ubt) print $19, $20, $13, 0.2*$15}' | psxy $area $proj -O -K -SV0.1 -W1p,green  >> $outfile.ps
-done < $PP.pp
-
+#### If SKS and SKKS splitting Match withing error (for TLAG and FAST)
+echo $line | awk '{ lbf=($9-$10);ubf=($9+$10);lbt=($11-$12);ubt=($11+$12); if ($13>=lbf && $13<=ubf && $15>=lbt && $15<=ubt) print $17, $18, $9, 0.2*$11}' $PP.pp | psxy $area $proj -O -K -SV0.1 -W1p,green  >> $outfile.ps
+echo $line | awk '{ lbf=($9-$10);ubf=($9+$10);lbt=($11-$12);ubt=($11+$12); if ($13>=lbf && $13<=ubf && $15>=lbt && $15<=ubt) print $19, $20, $13, 0.2*$15}' $PP.pp | psxy $area $proj -O -K -SV0.1 -W1p,green  >> $outfile.ps
+#### If SKS and SKKS spltting do not agree withing error for FAST and TLAG
+echo $line | awk '{ lbf=($9-$10);ubf=($9+$10);lbt=($11-$12);ubt=($11+$12); if ($13<lbf || $13>ubf || $15<lbt || $15>ubt) print $17, $18, $9, 0.2*$11}' | psxy $area $proj -O -K -SV0.1 -W1p,green  >> $outfile.ps
+echo $line | awk '{ lbf=($9-$10);ubf=($9+$10);lbt=($11-$12);ubt=($11+$12); if ($13<lbf || $13>ubf || $15<lbt || $15>ubt) print $19, $20, $13, 0.2*$15}' | psxy $area $proj -O -K -SV0.1 -W1p,green  >> $outfile.ps
 
 #Convert outfile to PDF so it will update in the same pane in Preview
 ps2pdf $outfile.ps > $outfile.pdf
