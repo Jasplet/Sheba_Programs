@@ -15,7 +15,7 @@ rm SKKS_tmp
 
 function call_taup_pierce {
   #echo $3
-  taup_pierce -sta $1 $2 -evt $3 $4 -h $5 -ph $6 -pierce 2689 --nodiscon
+  taup_pierce -sta $1 $2 -evt $3 $4 -h $5 -ph $6 -pierce 2889 --nodiscon
 }
 
 echo 'dist time depth  lat_SKS lon_SKS' > SKS_hdr
@@ -27,9 +27,9 @@ while read file; do
     if [ $i -gt 1 ]
     then
 
-    call_taup_pierce $(echo $file |  awk  '{print $4, $5, $6, $7, $8}' ) SKS | grep 2689 | head -1 > SKS_tmp
+    call_taup_pierce $(echo $file |  awk  '{print $4, $5, $6, $7, $8}' ) SKS | grep 2889 | head -1 > SKS_tmp
     #echo SKKS
-    call_taup_pierce $(echo $file |  awk  '{print $4, $5, $6, $7, $8}' ) SKKS | grep 2689 | head -1 | tail -2 > SKKS_tmp
+    call_taup_pierce $(echo $file |  awk  '{print $4, $5, $6, $7, $8}' ) SKKS | grep 2889 | head -1 | tail -2 > SKKS_tmp
     else
     echo 'Skipping Header Line'
     fi
@@ -49,8 +49,8 @@ cat SKS_hdr SKS > SKS_pierce.pp
 cat SKKS_hdr SKKS > SKKS_pierce.pp
 
 
-paste SKS_pierce.pp SKKS_pierce.pp  | awk '{print $10, $9, $5, $4}' > SKS_SKKS_tmp
-awk '{print $1,$2,$3,$4,$5,$6,$7,$8,$12,$13,$14,$15,$25,$26,$27,$28}' $INFILE > tmp
-paste tmp SKS_SKKS_tmp > SKS_SKKS_pairs.pp
+paste SKS_pierce.pp SKKS_pierce.pp  | awk '{print $5, $4, $10, $9}' > SKS_SKKS_pairs.pp
+#awk '{print $1,$2,$3,$4,$5,$6,$7,$8,$12,$13,$14,$15,$25,$26,$27,$28}' $INFILE > tmp
+#paste tmp SKS_SKKS_tmp > SKS_SKKS_pairs.pp
 
 rm tmp SKS_SKKS_tmp
