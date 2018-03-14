@@ -6,7 +6,7 @@
 ##################################################
 ############# Required Arguements ################
 #SDB=$1 # The SDB file containng SKS/SKKS pairs
-PP=/Users/ja17375/Shear_Wave_Splitting/Sheba/Results/SKS_SKKS_110_pairs # the .pp ans .mspp file containingthe pierce points for SKS and SKKS (Order should be Lon SKKS Lat SKKS Lon SKS Lat SKS)
+PP=$1 # the .pp ans .mspp file containingthe pierce points for SKS and SKKS (Order should be Lon SKKS Lat SKKS Lon SKS Lat SKS)
 #SDB=$2
 # Set GMT variables
 area=-R0/360/-70/70
@@ -19,10 +19,10 @@ outfile="piercepoints_plot"
 pscoast $area $proj -Ggrey -Dl -W0.5p -N1 -K -A1e4 > $outfile.ps
 #plot stations
 tail -n +2 $PP.sdb | awk '{print $5, $4 }' |\
-    psxy $area $proj -O -K -Si0.2 -Gred -W0.2p >> $outfile.ps
+    psxy $area $proj -O -K -Si0.2 -Gblack -W0.2p >> $outfile.ps
 #plot events
 tail -n +2 $PP.sdb | awk '{print $7, $6 }' |\
-    psxy $area $proj -O -K -Sc0.2 -Gblack -W0.2p >> $outfile.ps
+    psxy $area $proj -O -K -Sc0.18 -Gblack -W0.2p >> $outfile.ps
 
 #Plot SKS and SKKS exits points (SKS=blue, SKKS = green)
 # awk '{print $17,$18}' $PP.pp | psxy $area $proj -O -K -Sc0.1c -Gblue -W0.2p >> $outfile.ps
@@ -31,24 +31,24 @@ tail -n +2 $PP.sdb | awk '{print $7, $6 }' |\
 psxy $area $proj -O -K -W0.4p < $PP.mspp >> $outfile.ps
 
 ## Plot Circles centered on SKS, SKKS pierce points (Standard for this sort of plot) - Matches
-  awk '{print $5, $4}' /Users/ja17375/Shear_Wave_Splitting/Sheba/SKS_SKKS_matches.sdb | psxy $area $proj -O -K -Sc0.1 -Ggreen   >> $outfile.ps
-  awk '{print $7,$6}' /Users/ja17375/Shear_Wave_Splitting/Sheba/SKS_SKKS_matches.sdb | psxy $area $proj -O -K -Sc0.1 -Ggreen   >> $outfile.ps
+  awk '{print $5, $4}' /Users/ja17375/Shear_Wave_Splitting/Sheba/${PP}_matches.sdb | psxy $area $proj -O -K -Sc0.1 -Ggreen   >> $outfile.ps
+  awk '{print $7,$6}' /Users/ja17375/Shear_Wave_Splitting/Sheba/${PP}_matches.sdb | psxy $area $proj -O -K -Sc0.1 -Ggreen   >> $outfile.ps
 ## Plot Circles centered on SKS, SKKS pierce points (Standard for this sort of plot) - Diffs
-  awk '{print $5, $4}' /Users/ja17375/Shear_Wave_Splitting/Sheba/SKS_SKKS_diffs.sdb | psxy $area $proj -O -K -Sc0.1 -Gred   >> $outfile.ps
-  awk '{print $7,$6}' /Users/ja17375/Shear_Wave_Splitting/Sheba/SKS_SKKS_diffs.sdb | psxy $area $proj -O -K -Sc0.1 -Gred   >> $outfile.ps
+  awk '{print $5, $4}' /Users/ja17375/Shear_Wave_Splitting/Sheba/${PP}_diffs.sdb | psxy $area $proj -O -K -Sc0.1 -Gred   >> $outfile.ps
+  awk '{print $7,$6}' /Users/ja17375/Shear_Wave_Splitting/Sheba/${PP}_diffs.sdb | psxy $area $proj -O -K -Sc0.1 -Gred   >> $outfile.ps
 
 # Plot SKS and SKKS splitting as vectors at the corresponding exit points from the core. Rotation from N represents fast direction and length is proportional to TLAG
 #### If SKS and SKKS splitting Match withing error (for TLAG and FAST)
-  awk '{ print $5, $4, $8, 0.15*$10}' /Users/ja17375/Shear_Wave_Splitting/Sheba/SKS_SKKS_matches.sdb | psxy $area $proj -O -K -SV0.1 -W0.5p,green  >> $outfile.ps
-  awk '{ print $7, $6, $12, 0.15*$14}' /Users/ja17375/Shear_Wave_Splitting/Sheba/SKS_SKKS_matches.sdb | psxy $area $proj -O -K -SV0.1 -W0.5p,green  >> $outfile.ps
-  awk '{ print $5, $4, ($8+180), 0.15*$10}' /Users/ja17375/Shear_Wave_Splitting/Sheba/SKS_SKKS_matches.sdb | psxy $area $proj -O -K -SV0.1 -W0.5p,green  >> $outfile.ps
-  awk '{ print $7, $6, ($12+180), 0.15*$14}' /Users/ja17375/Shear_Wave_Splitting/Sheba/SKS_SKKS_matches.sdb | psxy $area $proj -O -K -SV0.1 -W0.5p,green  >> $outfile.ps
+  awk '{ print $5, $4, $8, 0.15*$10}' /Users/ja17375/Shear_Wave_Splitting/Sheba/${PP}_matches.sdb | psxy $area $proj -O -K -SV0.1 -W0.5p,green  >> $outfile.ps
+  awk '{ print $7, $6, $12, 0.15*$14}' /Users/ja17375/Shear_Wave_Splitting/Sheba/${PP}_matches.sdb | psxy $area $proj -O -K -SV0.1 -W0.5p,green  >> $outfile.ps
+  awk '{ print $5, $4, ($8+180), 0.15*$10}' /Users/ja17375/Shear_Wave_Splitting/Sheba/${PP}_matches.sdb | psxy $area $proj -O -K -SV0.1 -W0.5p,green  >> $outfile.ps
+  awk '{ print $7, $6, ($12+180), 0.15*$14}' /Users/ja17375/Shear_Wave_Splitting/Sheba/${PP}_matches.sdb | psxy $area $proj -O -K -SV0.1 -W0.5p,green  >> $outfile.ps
 
 #### If SKS and SKKS splitting do not match within error (for TLAG and FAST)
-  awk '{ print $5, $4, $8, 0.15*$10}' /Users/ja17375/Shear_Wave_Splitting/Sheba/SKS_SKKS_diffs.sdb | psxy $area $proj -O -K -SV0.1 -W0.5p,red  >> $outfile.ps
-  awk '{ print $7, $6, $12, 0.15*$14}' /Users/ja17375/Shear_Wave_Splitting/Sheba/SKS_SKKS_diffs.sdb | psxy $area $proj -O -K -SV0.1 -W0.5p,red  >> $outfile.ps
-  awk '{ print $5, $4, ($8+180), 0.15*$10}' /Users/ja17375/Shear_Wave_Splitting/Sheba/SKS_SKKS_diffs.sdb | psxy $area $proj -O -K -SV0.1 -W0.5p,red  >> $outfile.ps
-  awk '{ print $7, $6, ($12+180), 0.15*$14}' /Users/ja17375/Shear_Wave_Splitting/Sheba/SKS_SKKS_diffs.sdb | psxy $area $proj -O -K -SV0.1 -W0.5p,red  >> $outfile.ps
+  awk '{ print $5, $4, $8, 0.15*$10}' /Users/ja17375/Shear_Wave_Splitting/Sheba/${PP}_diffs.sdb | psxy $area $proj -O -K -SV0.1 -W0.5p,red  >> $outfile.ps
+  awk '{ print $7, $6, $12, 0.15*$14}' /Users/ja17375/Shear_Wave_Splitting/Sheba/${PP}_diffs.sdb | psxy $area $proj -O -K -SV0.1 -W0.5p,red  >> $outfile.ps
+  awk '{ print $5, $4, ($8+180), 0.15*$10}' /Users/ja17375/Shear_Wave_Splitting/Sheba/${PP}_diffs.sdb | psxy $area $proj -O -K -SV0.1 -W0.5p,red  >> $outfile.ps
+  awk '{ print $7, $6, ($12+180), 0.15*$14}' /Users/ja17375/Shear_Wave_Splitting/Sheba/${PP}_diffs.sdb | psxy $area $proj -O -K -SV0.1 -W0.5p,red  >> $outfile.ps
 
 ### Try adding basemap last (as I think this is what matt herman used to do?)
 psbasemap $proj $area -Bafg -BWESN+t'Pierce points plot' -O -U >> $outfile.ps
