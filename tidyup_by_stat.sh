@@ -8,6 +8,7 @@
 STAT=$1
 PHASE=$2
 SPATH=$3
+OUT=$4
 echo 'DATE  TIME  STAT  EVLA    EVLO    STLA    STLO    EVDP    DIST     AZI     BAZ    FAST   DFAST    TLAG   DTLAG    SPOL   DSPOL    WBEG    WEND   EIGORIG    EIGCORR    Q    SNR    NDF' > hdr
 #rm -f $3/Stat_$2_results_list.txt
 
@@ -25,7 +26,7 @@ tail -1 -q $SPATH/Sheba/SAC/$STAT/$PHASE/$STAT_$PHASE_*_sheba.stats | cut -c13-5
 paste temp1 temp2 |\
 	awk -v stat="$1" '{print $1,$2,stat,$5,$6,$3,$4,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23}' > temp_result
 
-cat hdr temp_result > $SPATH/Sheba/Results/$1_$2_$4.sdb
+cat hdr temp_result > $SPATH/Sheba/Results/$STAT_$PHASE_$OUT.sdb
 #echo $SPATH/Sheba/Results/$1_$2_sheba_results.txt > int
 #cat $3/Stat_$2_results_list.txt int  > $3/Stat_$2_results_list.txt
 
