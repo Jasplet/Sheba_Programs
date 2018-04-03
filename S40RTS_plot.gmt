@@ -1,0 +1,28 @@
+#! /bin/bash
+############# Program: S40RTS_plot.gmt ############
+# This program plots the S40RTS tomography model along the CMB using the Ekert IV projection
+############# Author: Joseph Asplet ##############
+##################################################
+############# Required Arguements ################
+
+# Set GMT variables
+area=-R0/360/-70/70
+proj=-Jkf1:1.5e8
+outfile=/Users/ja17375/Shear_Wave_Splitting/Sheba/Figures/S40RTS_2800km
+cpt=/Users/ja17375/Shear_Wave_Splitting/Data/S40RTS.cpt
+
+#Plot the Basemap
+psbasemap $proj $area -X4c -Y5c -Bafg -BWESN+t'S40RTS 2800km' -K  > $outfile.ps
+#Plot S40RTS at CMB
+makecpt -Cpolar -T-2/2/0.25 -Ic -Do > $cpt
+
+grdimage $proj $area /Users/ja17375/Shear_Wave_Splitting/Data/S40RTS_2800km.grd -C$cpt -O -K >> $outfile.ps
+#Plot Coastline
+pscoast $area $proj -Ggrey -Dl -W0.5p -N1 -K -O -A1e4 >> $outfile.ps
+
+### Plot a colorscale for S40RTS
+psscale -Dx11.5c/-1c+w12c/0.5c+jTC+h+e -C$cpt   -O -K -Ba1f0.5g0.25+l"shear velocity variation (%)" >> $outfile.ps
+
+#Convert outfile to PDF so it will update in the same pane in Preview
+ps2pdf $outfile.ps $outfile.pdf
+open $outfile.pdf
