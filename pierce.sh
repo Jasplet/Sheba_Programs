@@ -5,11 +5,11 @@ export PATH=/Users/ja17375/Ext_programs/TauP/bin:$PATH
 ## Args
 #PHASE=$1 #Phase you want the pierce points for
 
-INFILE=$1 # SDB file that you want the pierce point format
+INFILE=${1%.sdb} # SDB file that you want the pierce point format
 DEPTH=2691 # [km] depth we want the pierece point (~ 200km above CMB at 2891km)
 rm SKS
 rm SKKS
-rm SKS_SKKS_pairs.mspp
+rm $INFILE.mspp
 rm SKS_tmp
 rm SKKS_tmp
 
@@ -27,9 +27,9 @@ while read file; do
     if [ $i -gt 1 ]
     then
 
-    call_taup_pierce $(echo $file |  awk  '{print $4, $5, $6, $7, $8}' ) SKS | grep 2889 | head -1 > SKS_tmp
+    call_taup_pierce $(echo $file |  awk  '{print $4, $5, $6, $7, $8}' ) SKS | grep 2889 | tail -1 > SKS_tmp
     #echo SKKS
-    call_taup_pierce $(echo $file |  awk  '{print $4, $5, $6, $7, $8}' ) SKKS | grep 2889 | head -1 | tail -2 > SKKS_tmp
+    call_taup_pierce $(echo $file |  awk  '{print $4, $5, $6, $7, $8}' ) SKKS | grep 2889 | head -3 | tail -1 > SKKS_tmp
     else
     echo 'Skipping Header Line'
     fi
@@ -38,18 +38,19 @@ while read file; do
     cat SKS_tmp >> SKS
     cat SKKS_tmp >> SKKS
 
-    awk 'BEGIN{print ">"} {print $5, $4}' SKS_tmp >> SKS_SKKS_pairs.mspp
-    awk '{print $5, $4}' SKKS_tmp >> SKS_SKKS_pairs.mspp
+    awk 'BEGIN{print ">"} {print $5, $4}' SKS_tmp >> $INFILE.mspp
+    awk '{print $5, $4}' SKKS_tmp >> $INFILE.mspp
 
-done < $INFILE
+done < $INFILE.sdb
 
+echo $i
 
 
 cat SKS_hdr SKS > SKS_pierce.pp
 cat SKKS_hdr SKKS > SKKS_pierce.pp
 
 
-paste SKS_pierce.pp SKKS_pierce.pp  | awk '{print $5, $4, $10, $9}' > SKS_SKKS_pairs.pp
+paste SKS_pierce.pp SKKS_pierce.pp  | awk '{print $5, $4, $10, $9}' > $INFILE.pp
 #awk '{print $1,$2,$3,$4,$5,$6,$7,$8,$12,$13,$14,$15,$25,$26,$27,$28}' $INFILE > tmp
 #paste tmp SKS_SKKS_tmp > SKS_SKKS_pairs.pp
 
