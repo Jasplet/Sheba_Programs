@@ -28,10 +28,10 @@ tail -n +2 /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/$PP.sdb | awk '{pri
 tail -n +2 /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/$PP.sdb | awk '{print $7, $6 }' |\
     psxy $area $proj -O -K -Sa0.12 -Gblack -W0.2p >> $outfile.ps
 #Plot box for _zoomin
-echo '120 0
-      120 30
-      170 30
-      170 0 ' | psxy $area $proj -O -K -L -W0.5p >> $outfile.ps
+echo '-160 20
+      -160 60
+      -90 60
+      -90 20' | psxy $area $proj -O -K -L -W1p >> $outfile.ps
 #Plot SKS and SKKS exits points (SKS=blue, SKKS = green)
 # awk '{print $17,$18}' $PP.pp | psxy $area $proj -O -K -Sc0.1c -Gblue -W0.2p >> $outfile.ps
 # awk '{print $19,$20}' $PP.pp | psxy $area $proj -O -K -Sc0.1c -Ggreen -W0.2p >> $outfile.ps
