@@ -20,7 +20,7 @@ psbasemap $proj $area -X5c -Y5c -Bafg -BWESN -K  > $outfile.ps
 
 grdimage $proj $area /Users/ja17375/Shear_Wave_Splitting/Data/S40RTS_2800km.grd -C$cpt -O -K >> $outfile.ps
 #Plot Coastline
-pscoast $area $proj -Gdarkgrey -Dl -W0.5p -N1 -K -O -A1e4 >> $outfile.ps
+pscoast $area $proj -Dl -W0.5p -N1 -K -O -A1e4 >> $outfile.ps
 #plot stations
 tail -n +2 /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/$PP.sdb | awk '{print $5, $4 }' |\
     psxy $area $proj -O -K -Si0.15 -Gred -W0.2p >> $outfile.ps
@@ -52,16 +52,16 @@ psxy $area $proj -O -K -W0.75p,${diff} < /Users/ja17375/Shear_Wave_Splitting/She
 
 # Plot SKS and SKKS splitting as vectors at the corresponding exit points from the core. Rotation from N represents fast direction and length is proportional to TLAG
 #### If SKS and SKKS splitting Match withing error (for TLAG and FAST)
-  # awk '{ print $9, $8, $12, 0.15*$14}' /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/${PP}_matches.sdb | psxy $area $proj -O -K -SV0.1 -W0.5p,cyan1  >> $outfile.ps
-  # awk '{ print $11, $10, $16, 0.15*$18}' /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/${PP}_matches.sdb | psxy $area $proj -O -K -SV0.1 -W0.5p,cyan1  >> $outfile.ps
-  # awk '{ print $9, $8, ($12+180), 0.15*$14}' /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/${PP}_matches.sdb | psxy $area $proj -O -K -SV0.1 -W0.5p,cyan1  >> $outfile.ps
-  # awk '{ print $11, $10, ($16+180), 0.15*$18}' /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/${PP}_matches.sdb | psxy $area $proj -O -K -SV0.1 -W0.5p,cyan1  >> $outfile.ps
+   awk '{ print $9, $8, $12, 0.15*$14}' /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/${PP}_matches.sdb | psxy $area $proj -O -K -SV0.1 -W0.5p,${match}  >> $outfile.ps
+   awk '{ print $11, $10, $16, 0.15*$18}' /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/${PP}_matches.sdb | psxy $area $proj -O -K -SV0.1 -W0.5p,${match}  >> $outfile.ps
+   awk '{ print $9, $8, ($12+180), 0.15*$14}' /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/${PP}_matches.sdb | psxy $area $proj -O -K -SV0.1 -W0.5p,${match}  >> $outfile.ps
+   awk '{ print $11, $10, ($16+180), 0.15*$18}' /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/${PP}_matches.sdb | psxy $area $proj -O -K -SV0.1 -W0.5p,${match} >> $outfile.ps
 
 #### If SKS and SKKS splitting do not match within error (for TLAG and FAST)
-  # awk '{ print $9, $8, $12, 0.15*$14}' /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/${PP}_diffs.sdb | psxy $area $proj -O -K -SV0.1 -W0.5p,darkgreen  >> $outfile.ps
-  # awk '{ print $11, $10, $16, 0.15*$18}' /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/${PP}_diffs.sdb | psxy $area $proj -O -K -SV0.1 -W0.5p,darkgreen  >> $outfile.ps
-  # awk '{ print $9, $8, ($12+180), 0.15*$14}' /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/${PP}_diffs.sdb | psxy $area $proj -O -K -SV0.1 -W0.5p,darkgreen  >> $outfile.ps
-  # awk '{ print $11, $10, ($16+180), 0.15*$18}' /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/${PP}_diffs.sdb | psxy $area $proj -O -K -SV0.1 -W0.5p,darkgreen  >> $outfile.ps
+   awk '{ print $9, $8, $12, 0.15*$14}' /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/${PP}_diffs.sdb | psxy $area $proj -O -K -SV0.1 -W0.5p,${diff}  >> $outfile.ps
+   awk '{ print $11, $10, $16, 0.15*$18}' /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/${PP}_diffs.sdb | psxy $area $proj -O -K -SV0.1 -W0.5p,${diff}  >> $outfile.ps
+   awk '{ print $9, $8, ($12+180), 0.15*$14}' /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/${PP}_diffs.sdb | psxy $area $proj -O -K -SV0.1 -W0.5p,${diff}  >> $outfile.ps
+   awk '{ print $11, $10, ($16+180), 0.15*$18}' /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/${PP}_diffs.sdb | psxy $area $proj -O -K -SV0.1 -W0.5p,${diff} >> $outfile.ps
 
 ### Plot a colorscale for S40RTS
 psscale -Dx11.2c/-1c+w12c/0.5c+jTC+h+e -C$cpt   -O -K -Ba1f0.5g0.25+l"shear velocity variation (%)" >> $outfile.ps
