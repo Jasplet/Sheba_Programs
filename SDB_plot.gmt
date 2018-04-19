@@ -32,11 +32,13 @@ tail -n +2 /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/$PP.sdb | awk '{pri
 ## Plot Circles centered on SKS, SKKS pierce points (Standard for this sort of plot) - Matches
   awk '{print $3, $4}' /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/${PP}.pp | psxy $area $proj -O -K -Sd0.12 -Givory >> $outfile.ps
 
-Plot SKS and SKKS splitting as vectors at the corresponding exit points from the core. Rotation from N represents fast direction and length is proportional to TLAG
+# Plot SKS and SKKS splitting as vectors at the corresponding exit points from the core. Rotation from N represents fast direction and length is proportional to TLAG
 #### If SKS and SKKS splitting Match withing error (for TLAG and FAST)
-   awk '{ print $9, $8, $12, 0.15*$14}' /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/${PP}.sdb | psxy $area $proj -O -K -SV0.1 -W0.5p,ivory  >> $outfile.ps
-   awk '{ print $9, $8, ($12+180), 0.15*$14}' /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/${PP}.sdb | psxy $area $proj -O -K -SV0.1 -W0.5p,ivory  >> $outfile.ps
-
+   awk '{print $3 ,$4}' /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/${PP}.pp > temp1
+   awk '{print $12, $15}' /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/${PP}.sdb > temp2
+   paste temp1 temp2 > temp
+   awk '{print $1,$2, $3,0.15*$4}' temp | psxy $area $proj -O -K -SV0.1 -W0.5p,ivory  >> $outfile.ps
+   awk '{print $1,$2, $3+180,0.15*$4}' temp | psxy $area $proj -O -K -SV0.1 -W0.5p,ivory  >> $outfile.ps
 
 ### Plot a colorscale for S40RTS
 psscale -Dx11.2c/-1c+w12c/0.5c+jTC+h+e -C$cpt   -O -K -Ba1f0.5g0.25+l"shear velocity variation (%)" >> $outfile.ps
