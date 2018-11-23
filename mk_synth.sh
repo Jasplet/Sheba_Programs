@@ -8,11 +8,11 @@
 SPOL=$1
 # Make sure we are in the SYNTH directory
 #cd ~/Shear_Wave_Splitting/Data/SYNTH/SP${SPOL}
-rm /Users/ja17375/Shear_Wave_Splitting/Data/SP${SPOL}/Synthetics_SP${SPOL}.events
+rm /Users/ja17375/Shear_Wave_Splitting/Data/SP${SPOL}/Noise025/Synthetics_SP${SPOL}.events
 function call_sacsplitwave {
 #    Function to basically call sacsplitwav
     echo $1 $2 $3
-    sacsplitwave -op $1 $2 -spol $3 -dfreq 0.1 -noise 0.05 #Use 0.1 for "high noise"
+    sacsplitwave -op $1 $2 -spol $3 -dfreq 0.1 -noise 0.25 #Use 0.1 for "high noise"
 
 }
 
@@ -59,7 +59,7 @@ while [ $dt -lt 401 ]; do
 #     fi
     # Create a file file
 
-    echo "$fname" | cat >> /Users/ja17375/Shear_Wave_Splitting/Data/SYNTH/SP${SPOL}/Synthetics_SP${SPOL}.events
+    echo "$fname" | cat >> /Users/ja17375/Shear_Wave_Splitting/Data/SYNTH/SP${SPOL}/Noise025/Synthetics_SP${SPOL}.events
     let fast+=5
     let k+=1
     done
