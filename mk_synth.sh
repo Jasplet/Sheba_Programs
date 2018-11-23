@@ -7,12 +7,12 @@
 # Parse arguement
 SPOL=$1
 # Make sure we are in the SYNTH directory
-cd ~/Shear_Wave_Splitting/Data/SYNTH/SP${SPOL}
+#cd ~/Shear_Wave_Splitting/Data/SYNTH/SP${SPOL}
 rm /Users/ja17375/Shear_Wave_Splitting/Data/SP${SPOL}/Synthetics_SP${SPOL}.events
 function call_sacsplitwave {
 #    Function to basically call sacsplitwav
     echo $1 $2 $3
-    sacsplitwave -op $1 $2 -spol $3 -dfreq 0.1 -noise 0.05
+    sacsplitwave -op $1 $2 -spol $3 -dfreq 0.1 -noise 0.05 #Use 0.1 for "high noise"
 
 }
 
