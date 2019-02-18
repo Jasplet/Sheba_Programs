@@ -12,7 +12,7 @@ rm /Users/ja17375/Shear_Wave_Splitting/Data/SP${SPOL}/Noise025/Synthetics_SP${SP
 function call_sacsplitwave {
 #    Function to basically call sacsplitwav
     echo $1 $2 $3
-    sacsplitwave -op $1 $2 -spol $3 -dfreq 0.1 -noise 0.25 #Use 0.1 for "high noise"
+    sacsplitwave -op $1 $2 -spol $3 -dfreq 0.1 -noise 0.25 #Use 0.1 for "low noise"
 
 }
 
