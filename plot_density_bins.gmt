@@ -1,0 +1,56 @@
+#! /bin/bash
+############# Program: Plot_density_bins.gmt ############
+# This program takes a .tri file which contains trigonal bin number, location of the centroid and the number of SKS/SKKS midpoints (later versions will have lam2 and dSI)
+############# Author: Joseph Asplet ##############
+##################################################
+############# Required Arguements ################
+#SDB=$1 # The SDB file containng SKS/SKKS pairs
+IN=${1} # the .tri file with the tringonal bins in
+LATLONG=$2 #the piercepoint file (formatted lat/long for geogeom code) that was used to generate the midpoints and the final bins
+# Set GMT variables
+area=-R0/360/-70/70
+proj=-Jk1:1.5e8
+#Make cpt
+makecpt -T10/80/1 -Chot  > bindensity.cpt
+makecpt -T0/1 -Chot > lambda_density.cpt
+makecpt -T0/1.0 -Chot > dSI_density.cpt
+
+outfile1=/Users/ja17375/Shear_Wave_Splitting/Figures/${IN%.*}_counts
+outfile2=/Users/ja17375/Shear_Wave_Splitting/Figures/${IN%.*}_lambda2
+outfile3=/Users/ja17375/Shear_Wave_Splitting/Figures/${IN%.*}_dSI
+#Plot the Basemap(s)
+#Density
+psbasemap $proj $area -X1c -Y5c -Bafg -BWESN+t'Pairs counts for each T4 bin' -K  > $outfile1.ps
+#Lambda2
+psbasemap $proj $area -X1c -Y5c -Bafg -BWESN+t'Median Lambda 2 value' -K  > $outfile2.ps
+#d_SI
+psbasemap $proj $area -X1c -Y5c -Bafg -BWESN+t'Median delta SI' -K  > $outfile3.ps
+#Plot coastline
+pscoast $area $proj -Dl -W0.5p  -N1 -K -O -A1e4 >> $outfile1.ps
+pscoast $area $proj -Dl -W0.5p  -N1 -K -O -A1e4 >> $outfile2.ps
+pscoast $area $proj -Dl -W0.5p  -N1 -K -O -A1e4 >> $outfile3.ps
+# Plot Bin Centroids with the COUNTS
+tail +1 $IN | awk '{print $6,$5,$2}' | psxy $proj $area -K -O -W0.5p -Sc0.2 -Cbindensity.cpt >> $outfile1.ps
+# Plot Bin Centroids with the median Lambda 2
+tail +1 $IN | awk '{print $6,$5,$3}' | psxy $proj $area -K -O -W0.5p -Sc0.2 -Clambda_density.cpt >> $outfile2.ps
+# Plot Bin Centroids with the dSI
+tail +1 $IN | awk '{print $6,$5,$4}' | psxy $proj $area -K -O -W0.5p -Sc0.2 -CdSI_density.cpt >> $outfile3.ps
+#find bin 2746
+ echo " -120.1833 42.7726" | psxy $proj $area -K -O -Sd0.3 -Gblue >> $outfile1.ps
+# Plot ColorScale for Counts
+psscale -Cbindensity.cpt -Dx13.3c/-1c+w12c/0.5c+jTC+h -O -K -Ba10f+l"Frequency" >> $outfile1.ps
+# Plot ColorScale for Lambda 2
+psscale -Clambda_density.cpt -Dx13.3c/-1c+w12c/0.5c+jTC+h -O -K -Baf+l"Lambda 2" >> $outfile2.ps
+# Plot ColorScale for dSI 2
+psscale -CdSI_density.cpt -Dx13.3c/-1c+w12c/0.5c+jTC+h -O -K -Baf+l"dSI" >> $outfile3.ps
+
+#cat /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/Combined/midpoints.tri | awk '{print $2, $1 }' |\
+  #  psxy $proj $area -O -K -W0.5p -Sc0.1 -Gblue >> $outfile.ps
+
+ps2pdf $outfile1.ps $outfile1.pdf
+ps2pdf $outfile2.ps $outfile2.pdf
+ps2pdf $outfile3.ps $outfile3.pdf
+
+open $outfile1.pdf
+open $outfile2.pdf
+open $outfile3.pdf
