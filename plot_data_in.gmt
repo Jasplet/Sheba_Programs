@@ -21,26 +21,37 @@ pscoast $proj $area -Da -W0.5p -Sgray75 -Ggray40 -O -K >> $outfile.ps
 # Plot Input Event/Stations
 #plot stations - Jacks Raw Data
 tail -n +2 /Users/ja17375/Shear_Wave_Splitting/Data/Jacks_SKS_RAW.txt | awk '{print $6, $5 }' |\
-    psxy $area $proj -O -K -Si0.1 -Glightcyan1 -W0.2p >> $outfile.ps
+    psxy $area $proj -O -K -Si0.2 -Gcyan1 -W0.2p >> $outfile.ps
 #plot events - Jacks Raw Data
 tail -n +2 /Users/ja17375/Shear_Wave_Splitting/Data/Jacks_SKS_RAW.txt | awk '{print $4, $3 }' |\
-    psxy $area $proj -O -K -Sa0.1 -Glightsalmon1 -W0.2p >> $outfile.ps
+    psxy $area $proj -O -K -Sa0.2 -Glightsalmon1 -W0.2p >> $outfile.ps
 #Plot stations - Dengs Data
 tail -n +2 /Users/ja17375/Shear_Wave_Splitting/Data/Deng_et_al_2016.stations | awk -F, '{print $3, $2 }' |\
-    psxy $area $proj -O -K -Si0.1 -Glightcyan1 -W0.2p >> $outfile.ps
+    psxy $area $proj -O -K -Si0.2 -Gcyan1 -W0.2p >> $outfile.ps
 #Plot Events - Dengs Data
 tail -n +2 /Users/ja17375/Shear_Wave_Splitting/Data/Deng_et_al_2016.events | awk '{print $4, $3 }' |\
-    psxy $area $proj -O -K -Sa0.1 -Glightsalmon1 -W0.2p >> $outfile.ps
+    psxy $area $proj -O -K -Sa0.2 -Glightsalmon1 -W0.2p >> $outfile.ps
 # Plot Event/Stations that produce pairs
 
 #plot stations
-tail -n +2 /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/Combined/JS_JN_D_all.pairs | awk '{print $7, $6 }' |\
-    psxy $area $proj -O -K -Si0.1 -Gcyan1 -W0.2p >> $outfile.ps
+tail -n +2 /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/Combined/Filt_05Hz/JS_JN_D_all.pairs | awk '{print $7, $6 }' |\
+    psxy $area $proj -O -K -Si0.2 -Gblue -W0.2p >> $outfile.ps
 #plot events
-tail -n +2 /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/Combined/JS_JN_D_all.pairs | awk '{print $5, $4 }' |\
-    psxy $area $proj -O -K -Sa0.1 -Gtomato1 -W0.2p >> $outfile.ps
+tail -n +2 /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/Combined/Filt_05Hz/JS_JN_D_all.pairs | awk '{print $5, $4 }' |\
+    psxy $area $proj -O -K -Sa0.2 -Gred -W0.2p >> $outfile.ps
 
-
+#Make legend for recievers
+echo '-90 -90 Reciever' | pstext $area $proj -O -X-5.5i -Y0.5i -K -N >> $outfile.ps
+echo '-90 -90' | psxy $area $proj -O -K -X-0.3i -Y-0.3i -N -Si0.5 -Gblue -W0.5p >> $outfile.ps
+echo '-90 -90 Used' | pstext $area $proj -O -K -X0.6i -N >> $outfile.ps
+echo '-90 -90 Not Used' | pstext $area $proj -O -K -Y-0.3i -N >> $outfile.ps
+echo '-90 -90' | psxy $area $proj -O -K -X-0.6i -N -Si0.5 -Gcyan1 -W0.5p >> $outfile.ps
+#Make legend for Sources
+echo '-90 -90 Source' | pstext $area $proj -O -X8.7i -Y0.6i -K -N >> $outfile.ps
+echo '-90 -90' | psxy $area $proj -O -K -X-0.3i -Y-0.3i -N -Sa0.5 -Gred -W0.5p >> $outfile.ps
+echo '-90 -90 Used' | pstext $area $proj -O -K -X0.6i -N >> $outfile.ps
+echo '-90 -90 Not Used' | pstext $area $proj -O -K -Y-0.3i -N >> $outfile.ps
+echo '-90 -90' | psxy $area $proj -O -K -X-0.6i -N -Sa0.5 -Glightsalmon1 -W0.5p >> $outfile.ps
 
 #Convert outfile to PDF so it will update in the same pane in Preview
 ps2pdf $outfile.ps $outfile.pdf
