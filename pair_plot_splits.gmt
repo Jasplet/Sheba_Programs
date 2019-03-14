@@ -16,7 +16,7 @@ snr=$1
 # proj=-Jk1:1.5e8
 area=-R-170/-80/10/70
 proj=-Jk1:5e7
-outfile=/Users/ja17375/Shear_Wave_Splitting/Sheba/Figures/Combined_results_${snr}_all_zoomin
+outfile=/Users/ja17375/Shear_Wave_Splitting/Sheba/Figures/SI_proj_results_${snr}_all_zoomin
 # outfile=/Users/ja17375/Thesis/Lambda2_Paper/Figs/Combined_results_${snr}_splits
 cpt=/Users/ja17375/Shear_Wave_Splitting/Data/S40RTS.cpt
 
@@ -67,17 +67,17 @@ psxy $area $proj -O -K -W0.75p,${diff} < /Users/ja17375/Shear_Wave_Splitting/She
 # awk '{print $41,$40}' /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/SI_proj/SI_proj_${snr}_nulls.pairs | psxy $area $proj -O -K -Sd0.15  -G${null} -W0.25p,black >> $outfile.ps
 
 # Plot Circles centered on SKS, SKKS pierce points (Standard for this sort of plot) - Null-Split Pairs
-awk '{if ($22 > 0.5) print $39, $38}' /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/SI_proj/SI_proj_${snr}_null_split.pairs | psxy $area $proj -O -K -Sc0.2 -G${diff} -W0.25p,black   >> $outfile.ps
-awk '{if ($22 < -0.7) print $39, $38}' /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/SI_proj/SI_proj_${snr}_null_split.pairs | psxy $area $proj -O -K -Sc0.2 -G${null} -W0.25p,black   >> $outfile.ps
-awk '{if ($35 > 0.5) print $41,$40}' /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/SI_proj/SI_proj_${snr}_null_split.pairs | psxy $area $proj -O -K -Sd0.2 -G${diff} -W0.25p,black >> $outfile.ps
-awk '{if ($35 < -0.7) print $41,$40}' /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/SI_proj/SI_proj_${snr}_null_split.pairs | psxy $area $proj -O -K -Sd0.2 -G${null} -W0.25p,black >> $outfile.ps
+awk '{if ($22 > 0.5) print $43, $42}' /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/SI_proj/SI_proj_${snr}_null_split.pairs | psxy $area $proj -O -K -Sc0.2 -G${diff} -W0.25p,black   >> $outfile.ps
+awk '{if ($22 < -0.7) print $43, $42}' /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/SI_proj/SI_proj_${snr}_null_split.pairs | psxy $area $proj -O -K -Sc0.2 -G${null} -W0.25p,black   >> $outfile.ps
+awk '{if ($37 > 0.5) print $45,$44}' /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/SI_proj/SI_proj_${snr}_null_split.pairs | psxy $area $proj -O -K -Sd0.2 -G${diff} -W0.25p,black >> $outfile.ps
+awk '{if ($37 < -0.7) print $45,$44}' /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/SI_proj/SI_proj_${snr}_null_split.pairs | psxy $area $proj -O -K -Sd0.2 -G${null} -W0.25p,black >> $outfile.ps
 
 # Plot Circles centered on SKS, SKKS pierce points (Standard for this sort of plot) - Matches
-  awk '{print $39, $38}' /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/SI_proj/SI_proj_${snr}_matches_l2.pairs | psxy $area $proj -O -K -Sc0.2 -G${match} -W0.25p,black >> $outfile.ps
-  awk '{print $41,$40}' /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/SI_proj/SI_proj_${snr}_matches_l2.pairs | psxy $area $proj -O -K -Sd0.2 -G${match} -W0.25p,black >> $outfile.ps
+  awk '{print $43, $42}' /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/SI_proj/SI_proj_${snr}_matches_l2.pairs | psxy $area $proj -O -K -Sc0.2 -G${match} -W0.25p,black >> $outfile.ps
+  awk '{print $45,$44}' /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/SI_proj/SI_proj_${snr}_matches_l2.pairs | psxy $area $proj -O -K -Sd0.2 -G${match} -W0.25p,black >> $outfile.ps
 # Plot Circles centered on SKS, SKKS pierce points (Standard for this sort of plot) - Diffs
-  awk '{print $39, $38}' /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/SI_proj/SI_proj_${snr}_diffs_l2.pairs | psxy $area $proj -O -K -Sc0.20 -G${diff} -W0.25p,black   >> $outfile.ps
-  awk '{print $41,$40}' /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/SI_proj/SI_proj_${snr}_diffs_l2.pairs | psxy $area $proj -O -K -Sd0.20 -G${diff} -W0.25p,black >> $outfile.ps
+  awk '{print $43, $42}' /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/SI_proj/SI_proj_${snr}_diffs_l2.pairs | psxy $area $proj -O -K -Sc0.20 -G${diff} -W0.25p,black   >> $outfile.ps
+  awk '{print $45,$44}' /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/SI_proj/SI_proj_${snr}_diffs_l2.pairs | psxy $area $proj -O -K -Sd0.20 -G${diff} -W0.25p,black >> $outfile.ps
 
 ## Plot Fast, dt directions on top of DISCREPANT pairs
   # awk '{ print $39, $38, $12, $14}' /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/SI_proj/SI_proj_${snr}_diffs_l2.pairs | psxy $area $proj -O -K -SV0.2 -W1p,${diff}  >> $outfile.ps
