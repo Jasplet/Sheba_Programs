@@ -2,14 +2,46 @@
 ################### Program: mk_synth.sh  ######################################
 # This is a program to create synthetic split waveforms for a range of
 # fast directions and lag times
+# Recast (9/1/19) to allow for 2layer synthetics 
 ################################################################################
 
 # Parse arguement
-SPOL=$1
-NOISE_LVL=$2
+POS=()
+while [[ $# -gt 0 ]]
+do
+key="$1"
+
+case $key in
+  -s|-spol)
+  SPOL=$2
+  shift # past arguement (shift makes arg $2 become arg $1 etc (shifts args along 1))
+  shift # past value
+  ;;
+  -n|-noise)
+  NOISE_LVL=$2
+  shift
+  shift
+  ;;
+  -um)
+  UM_FAST=$2 # phi/dt for upper mantle are optional. If added then 2layer synthetics are generated
+  UM_PHI=$3
+  shift # past -um flag
+  shift # past fast direction
+  shift # past dt
+  ;;
+  *)
+  POS+=("$1") # Any extra args
+  shift
+  ;;
+esac
+done
+
+set -- "${POS[@]}" # restore positional parameters
+
 # Make sure we are in the SYNTH directory. Directorys need to me created in advance
-cd ~/Shear_Wave_Splitting/Data/SYNTH/SP${SPOL}/Noise${NOISE_LVL}
-rm /Users/ja17375/Shear_Wave_Splitting/Data/SP${SPOL}/Noise${NOISE_LVL}/Synthetics_SP${SPOL}.events
+# cd ~/Shear_Wave_Splitting/Data/SYNTH/SP${SPOL}/Noise${NOISE_LVL}
+# rm /Users/ja17375/Shear_Wave_Splitting/Data/SP${SPOL}/Noise${NOISE_LVL}/Synthetics_SP${SPOL}.events
+#
 function call_sacsplitwave {
 #    Function to basically call sacsplitwav
     echo $1 $2 $3 $4
