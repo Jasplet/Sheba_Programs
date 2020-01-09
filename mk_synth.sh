@@ -6,13 +6,14 @@
 
 # Parse arguement
 SPOL=$1
-# Make sure we are in the SYNTH directory
-#cd ~/Shear_Wave_Splitting/Data/SYNTH/SP${SPOL}
-rm /Users/ja17375/Shear_Wave_Splitting/Data/SP${SPOL}/Noise025/Synthetics_SP${SPOL}.events
+NOISE_LVL=$2
+# Make sure we are in the SYNTH directory. Directorys need to me created in advance
+cd ~/Shear_Wave_Splitting/Data/SYNTH/SP${SPOL}/Noise${NOISE_LVL}
+rm /Users/ja17375/Shear_Wave_Splitting/Data/SP${SPOL}/Noise${NOISE_LVL}/Synthetics_SP${SPOL}.events
 function call_sacsplitwave {
 #    Function to basically call sacsplitwav
-    echo $1 $2 $3
-    sacsplitwave -op $1 $2 -spol $3 -dfreq 0.1 -noise 0.25 #Use 0.1 for "low noise"
+    echo $1 $2 $3 $4
+    sacsplitwave -op $1 $2 -spol $3 -dfreq 0.1 -noise $4 #Use 0.1 for "low noise", 0.25 for "high" noise and now also add "0.05" for "very low"
 
 }
 
@@ -27,7 +28,7 @@ while [ $dt -lt 401 ]; do
 
     while [ $fast -lt 91 ]; do
 
-    call_sacsplitwave  $fast `echo "scale=2;$dt/100" | bc ` $SPOL
+    call_sacsplitwave  $fast `echo "scale=2;$dt/100" | bc ` $SPOL `echo "scale=2;$NOISE_LVL/100" | bc `
     # Modify Filenamesd
     mv SWAV.BHE SP${SPOL}_${k}001_120000.BHE
     mv SWAV.BHN SP${SPOL}_${k}001_120000.BHN
@@ -59,7 +60,7 @@ while [ $dt -lt 401 ]; do
 #     fi
     # Create a file file
 
-    echo "$fname" | cat >> /Users/ja17375/Shear_Wave_Splitting/Data/SYNTH/SP${SPOL}/Noise025/Synthetics_SP${SPOL}.events
+    echo "$fname" | cat >> /Users/ja17375/Shear_Wave_Splitting/Data/SYNTH/SP${SPOL}/Noise${NOISE_LVL}/Synthetics_SP${SPOL}_noise${NOISE_LVL}.events
     let fast+=5
     let k+=1
     done
