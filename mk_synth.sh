@@ -2,10 +2,12 @@
 ################### Program: mk_synth.sh  ######################################
 # This is a program to create synthetic split waveforms for a range of
 # fast directions and lag times
-# Recast (9/1/19) to allow for 2layer synthetics 
+# Recast (9/1/19) to allow for 2layer synthetics. This works by passing in a fixed "upper" layer
+# this is then applied along with the grid of phi, dt operators
 ################################################################################
 
 # Parse arguement
+# expected usage mk_synth.sh -spol 30 -n 0.01 -um 45 1.0
 POS=()
 while [[ $# -gt 0 ]]
 do
@@ -36,17 +38,27 @@ case $key in
 esac
 done
 
+if [ -z "$UM_FAST" ]
+then
+    echo "Upper layer not provided, proceeding to generate 1 layer synthetics"
+    out=Synthetics_SP${SPOL}_noise${NOISE_LVL}.events
+else
+    echo "Upper layer provided, gnerating 2 layer synthetics"
+    out=Synthetics_SP${SPOL}_noise${NOISE_LVL}_UFAST_${UM_FAST}_UPHI_${UM_PHI}.events
+fi
+
 set -- "${POS[@]}" # restore positional parameters
 
-# Make sure we are in the SYNTH directory. Directorys need to me created in advance
-# cd ~/Shear_Wave_Splitting/Data/SYNTH/SP${SPOL}/Noise${NOISE_LVL}
-# rm /Users/ja17375/Shear_Wave_Splitting/Data/SP${SPOL}/Noise${NOISE_LVL}/Synthetics_SP${SPOL}.events
-#
 function call_sacsplitwave {
 #    Function to basically call sacsplitwav
-    echo $1 $2 $3 $4
-    sacsplitwave -op $1 $2 -spol $3 -dfreq 0.1 -noise $4 #Use 0.1 for "low noise", 0.25 for "high" noise and now also add "0.05" for "very low"
-
+    echo $1 $2 $3 $4 $5 $6 #var $5 and $6 are for upper layer if provided
+    if [ -z "$5" ]
+    then
+      sacsplitwave -op $1 $2 -spol $3 -dfreq 0.1 -noise $4
+    else
+      sacsplitwave -op $1 $2 -op $5 $6 -spol $3 -dfreq 0.1 -noise $4
+    fi
+    #Use 0.1 for "low noise", 0.25 for "high" noise and now also add "0.05" for "very low"
 }
 
 fast=-90
@@ -75,24 +87,7 @@ while [ $dt -lt 401 ]; do
     sacsethdr user7 `echo "scale=2;$dt/100" | bc -l` SP${SPOL}_${k}001_120000.BH[E,N,Z]
     sacsethdr user8 $fast  SP${SPOL}_${k}001_120000.BH[E,N,Z]
 
-
-#     if [ $fast -lt 0 ]
-#     then
-#       # echo "${fast} lt 0 "
-#       mv SWAV.BHE SWAV_${dt}_N${fast#-}.BHE
-# q      mv SWAV.BHN SWAV_${dt}_N${fast#-}.BHN
-#       mv SWAV.BHZ SWAV_${dt}_N${fast#-}.BHZ
-#       fname=$fstem/SWAV_${dt}_N${fast#-}
-#     else
-#       # echo "$fast gt 0"
-#       mv SWAV.BHE SWAV_${dt}_${fast}.BHE
-#       mv SWAV.BHN SWAV_${dt}_${fast}.BHN
-#       mv SWAV.BHZ SWAV_${dt}_${fast}.BHZ
-#       fname=$fstem/SWAV_${dt}_${fast}
-#     fi
-    # Create a file file
-
-    echo "$fname" | cat >> /Users/ja17375/Shear_Wave_Splitting/Data/SYNTH/SP${SPOL}/Noise${NOISE_LVL}/Synthetics_SP${SPOL}_noise${NOISE_LVL}.events
+    echo "$fname" | cat >> $out
     let fast+=5
     let k+=1
     done
