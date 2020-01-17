@@ -49,6 +49,8 @@ fi
 
 set -- "${POS[@]}" # restore positional parameters
 
+echo "scale=2;$NOISE_LVL/100" | bc
+
 function call_sacsplitwave {
 #    Function to basically call sacsplitwav
     echo $1 $2 $3 $4 $5 $6 #var $5 and $6 are for upper layer if provided
