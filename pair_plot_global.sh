@@ -1,0 +1,191 @@
+#! /bin/bash
+############# Program: Pair_plot_global.gmt ############
+# This program takes a .pairs file  (implicitly containing SKS SKKS pairs) and their corresponding
+# SKS & SKKS pierce points and plots them on a map using GMT5
+# This version assumes that pairs have been classified as matching and discrepent and have been
+# seperated into two .pairs files accordingly. If you just want to plot pairs from a single
+# .pairs file, use pait_plot.gmt
+############# Author: Joseph Asplet ##############
+##################################################
+############# Required Arguements ################
+# Set SNR level
+snr=05
+file=$1
+path=/Users/ja17375/DiscrePy/Sheba
+# Set GMT variables
+# area=-R0/360/-70/70
+# proj=-Jk1:5e8
+outfile=${path}/Figures/Anula_results_${snr}
+
+# makecpt -Cpolar -Ic -T-15/15/0.5 > /Users/ja17375/DiscrePy/Data/tx2008.v2.p010.s_vti_ani.cpt
+cpt=/Users/ja17375/DiscrePy/Data/S40RTS.cpt
+# cpt=/Users/ja17375/DiscrePy/Data/tx2008.v2.p010.s_vti_ani.cpt
+#Plot the Basemap
+# psbasemap $proj $area -X1c -Y5c -Bg -BWESN -B40 -K  > $outfile.ps # For global map
+psbasemap $proj $area -X5c -Y3.5c  -BWESN -B10 -K  > $outfile.ps # For Zoomin
+#Plot S40RTS at CMB
+
+# grdimage $proj $area /Users/ja17375/DiscrePy/Data/S40RTS_2800km.grd -C$cpt -O -K >> $outfile.ps
+# grdimage $proj $area /Users/ja17375/DiscrePy/Data/Walker_models/TX2008.V2.P010.grd -C$cpt -O -K >> $outfile.ps
+#Plot Coastline
+#for greyscale use -Ggrey60 -Sgrey75
+# pscoast $area $proj -Dl -W0.5p -Golivedrab -Scadetblue1 -N1 -K -O -A1e4 >> $outfile.ps
+pscoast $area $proj -Dl -W0.5p -K -Gwhite -Swhite -O -A1e4 >> $outfile.ps
+ #Plot outline of Falleron slab from model of Lithgow-Bertelloni and Richards (1998)
+
+# awk '{print $2, $1}' /Users/ja17375/DiscrePy/Data/Lithgow-Bertolloni_and_Richards/slab.2745-2890.yx |\
+#     psxy $area $proj -O -K -Sc0.5 -W0.5p >> $outfile.ps
+
+# ############################ Plot Comb Results #############################################################################
+# ###################################################################################################################################
+#plot stations
+tail -n +2 ${path}/Results/${file}/${file}_${snr}_diffs_l2.pairs | awk '{print $7, $6 }' |\
+    psxy $area $proj -O -K -Si0.3 -Gred -W0.2p >> $outfile.ps
+tail -n +2 ${path}/Results/${file}/${file}_${snr}_matches_l2.pairs | awk '{print $7, $6 }' |\
+    psxy $area $proj -O -K -Si0.3 -Gred -W0.2p >> $outfile.ps
+tail -n +2 ${path}/Results/${file}/${file}_${snr}_diffs_null_split.pairs | awk '{print $7, $6 }' |\
+    psxy $area $proj -O -K -Si0.3 -Gred -W0.2p >> $outfile.ps
+tail -n +2 ${path}/Results/${file}/${file}_${snr}_matches_null_split.pairs | awk '{print $7, $6 }' |\
+    psxy $area $proj -O -K -Si0.2 -Gred -W0.2p >> $outfile.ps
+tail -n +2 ${path}/Results/${file}/${file}_${snr}_nulls.pairs | awk '{print $7, $6 }' |\
+    psxy $area $proj -O -K -Si0.2 -Gred -W0.2p >> $outfile.ps
+
+#plot events
+# Split Pairs
+tail -n +2 ${path}/Results/${file}/${file}_${snr}_diffs_l2.pairs | awk '{print $5, $4 }' |\
+    psxy $area $proj -O -K -Sa0.25 -Gblack -W0.2p >> $outfile.ps
+tail -n +2 ${path}/Results/${file}/${file}_${snr}_matches_l2.pairs | awk '{print $5, $4 }' |\
+    psxy $area $proj -O -K -Sa0.25 -Gblack -W0.2p >> $outfile.ps
+#Nul SPlit pairs
+tail -n +2 ${path}/Results/${file}/${file}_${snr}_diffs_l2.pairs | awk '{print $5, $4 }' |\
+    psxy $area $proj -O -K -Sa0.25 -Gblack -W0.2p >> $outfile.ps
+tail -n +2 ${path}/Results/${file}/${file}_${snr}_matches_l2.pairs | awk '{print $5, $4 }' |\
+    psxy $area $proj -O -K -Sa0.25 -Gblack -W0.2p >> $outfile.ps
+# PAssign colors to discrepant (green) and matching (black ) splits and to nulls (white)
+diff=green
+match=black
+null=white
+#
+#
+# #
+############################ Plot Combined Piercepoints #############################################################################
+###################################################################################################################################
+# Draw a line between each pair of SKS SKKS exit points
+#For combined .pairs file
+# sxy $area $proj -O -K -W0.75p < ${path}/Results/Combined/${file}_02_SKS_SKKS.mspp >> $outfile.ps
+# For using matches and diffs files
+# psxy $area $proj -O -K -W0.5p,${null} < ${path}/Results/${file}/${file}_${snr}_nulls.mspp >> $outfile.ps
+psxy $area $proj -O -K -W0.5p,${match} < ${path}/Results/${file}/${file}_${snr}_matches_l2.mspp >> $outfile.ps
+psxy $area $proj -O -K -W0.75p,${diff} < ${path}/Results/${file}/${file}_${snr}_diffs_l2.mspp >> $outfile.ps
+psxy $area $proj -O -K -W0.75p,${diff} < ${path}/Results/${file}/${file}_${snr}_diffs_null_split.mspp >> $outfile.ps
+# psxy $area $proj -O -K -W0.75p,${match} < ${path}/Results/${file}/${file}_${snr}_matches_null_split.mspp >> $outfile.ps
+
+## Plot Fast, dt directions on top of Matching pairs
+  awk '{ print $43, $42, $12, $14/2}' ${path}/Results/${file}/${file}_${snr}_matches_l2.pairs | psxy $area $proj -O -K -SV0.2 -W1p,${match}  >> $outfile.ps
+  awk '{ print $45, $44, $27, $29/2}' ${path}/Results/${file}/${file}_${snr}_matches_l2.pairs | psxy $area $proj -O -K -SV0.2 -W1p,${match}  >> $outfile.ps
+  awk '{ print $43, $42, ($12+180), $14/2}' ${path}/Results/${file}/${file}_${snr}_matches_l2.pairs | psxy $area $proj -O -K -SV0.2 -W1p,${match}  >> $outfile.ps
+  awk '{ print $45, $44, ($27+180), $29/2}' ${path}/Results/${file}/${file}_${snr}_matches_l2.pairs | psxy $area $proj -O -K -SV0.2 -W1p,${match} >> $outfile.ps
+#
+# ## Plot Fast, dt directions on top of DISCREPANT pairs
+awk '{ print $43, $42, $12, $14/2}' ${path}/Results/${file}/${file}_${snr}_diffs_l2.pairs | psxy $area $proj -O -K -SV0.2 -W1p,black  >> $outfile.ps
+awk '{ print $45, $44, $27, $29/2}' ${path}/Results/${file}/${file}_${snr}_diffs_l2.pairs | psxy $area $proj -O -K -SV0.2 -W1p,black  >> $outfile.ps
+awk '{ print $43, $42, ($12+180), $14/2}' ${path}/Results/${file}/${file}_${snr}_diffs_l2.pairs | psxy $area $proj -O -K -SV0.2 -W1p,black  >> $outfile.ps
+awk '{ print $45, $44, ($27+180), $29/2}' ${path}/Results/${file}/${file}_${snr}_diffs_l2.pairs | psxy $area $proj -O -K -SV0.2 -W1p,black >> $outfile.ps
+#
+# # ## Plot Fast, dt directions on top of the split half of Null-split pair_stack
+awk '{if ($22 > 0.5) print $43, $42,$12,$14/2}' ${path}/Results/${file}/${file}_${snr}_diffs_null_split.pairs | psxy $area $proj -O -K -SV0.2 -G${diff} -W1p,black   >> $outfile.ps
+awk '{if ($22 > 0.5) print $43, $42,($12+180), $14/2}' ${path}/Results/${file}/${file}_${snr}_diffs_null_split.pairs | psxy $area $proj -O -K -SV0.2 -G${diff} -W1p,black   >> $outfile.ps
+awk '{if ($37 > 0.5) print $45,$44,$27, $29/2}' ${path}/Results/${file}/${file}_${snr}_diffs_null_split.pairs | psxy $area $proj -O -K -SV0.2 -G${diff} -W1p,black >> $outfile.ps
+awk '{if ($37 > 0.5) print $45,$44,($27+180), $29/2}' ${path}/Results/${file}/${file}_${snr}_diffs_null_split.pairs | psxy $area $proj -O -K -SV0.2 -G${diff} -W1p,black >> $outfile.ps
+
+#Plot Nulls
+# awk '{print $43, $42}' ${path}/Results/${file}/${file}_${snr}_nulls.pairs | psxy $area $proj -O -K -Sc0.25 -G${null} -W0.25p,black   >> $outfile.ps
+# awk '{print $45,$44}' ${path}/Results/${file}/${file}_${snr}_nulls.pairs | psxy $area $proj -O -K -Sd0.25  -G${null} -W0.25p,black >> $outfile.ps
+
+# Plot Circles centered on SKS, SKKS pierce points (Standard for this sort of plot) - Null-Split Pairs that are Matching
+# awk '{if ($22 > 0.5) print $43, $42}' ${path}/Results/${file}/${file}_${snr}_matches_null_split.pairs | psxy $area $proj -O -K -Sc0.25 -G${match} -W0.25p,black   >> $outfile.ps
+# awk '{if ($22 < -0.7) print $43, $42}' ${path}/Results/${file}/${file}_${snr}_matches_null_split.pairs | psxy $area $proj -O -K -Sc0.25 -G${null} -W0.25p,black   >> $outfile.ps
+# awk '{if ($37 > 0.5) print $45,$44}' ${path}/Results/${file}/${file}_${snr}_matches_null_split.pairs | psxy $area $proj -O -K -Sd0.25 -G${match} -W0.25p,black >> $outfile.ps
+# awk '{if ($37 < -0.7) print $45,$44}' ${path}/Results/${file}/${file}_${snr}_matches_null_split.pairs | psxy $area $proj -O -K -Sd0.25 -G${null} -W0.25p,black >> $outfile.ps
+# Plot Circles centered on SKS, SKKS pierce points (Standard for this sort of plot) - Null-Split Pairs that are discrepent
+awk '{if ($22 > 0.5) print $43, $42}' ${path}/Results/${file}/${file}_${snr}_diffs_null_split.pairs | psxy $area $proj -O -K -Sc0.25 -G${diff} -W0.25p,black   >> $outfile.ps
+awk '{if ($22 < -0.7) print $43, $42}' ${path}/Results/${file}/${file}_${snr}_diffs_null_split.pairs | psxy $area $proj -O -K -Sc0.25 -G${null} -W0.25p,black   >> $outfile.ps
+awk '{if ($37 > 0.5) print $45,$44}' ${path}/Results/${file}/${file}_${snr}_diffs_null_split.pairs | psxy $area $proj -O -K -Sd0.25 -G${diff} -W0.25p,black >> $outfile.ps
+awk '{if ($37 < -0.7) print $45,$44}' ${path}/Results/${file}/${file}_${snr}_diffs_null_split.pairs | psxy $area $proj -O -K -Sd0.25 -G${null} -W0.25p,black >> $outfile.ps
+
+# Plot Circles centered on SKS, SKKS pierce points (Standard for this sort of plot) - Matches
+  awk '{print $43, $42}' ${path}/Results/${file}/${file}_${snr}_matches_l2.pairs | psxy $area $proj -O -K -Sc0.25 -G${match} -W0.25p,black >> $outfile.ps
+  awk '{print $45,$44}' ${path}/Results/${file}/${file}_${snr}_matches_l2.pairs | psxy $area $proj -O -K -Sd0.25 -G${match} -W0.25p,black >> $outfile.ps
+# Plot Circles centered on SKS, SKKS pierce points (Standard for this sort of plot) - Diffs
+  awk '{print $43, $42}' ${path}/Results/${file}/${file}_${snr}_diffs_l2.pairs | psxy $area $proj -O -K -Sc0.25 -G${diff} -W0.25p,black   >> $outfile.ps
+  awk '{print $45,$44}' ${path}/Results/${file}/${file}_${snr}_diffs_l2.pairs | psxy $area $proj -O -K -Sd0.25 -G${diff} -W0.25p,black >> $outfile.ps
+
+
+
+
+#
+  # echo '180 0 180 0.5' | psxy $area $proj -O -K -SV0.1 -W01p,black >> $outfile.ps # Draws a vector of lengeth = 0.5 seconds dt
+
+### Plot a colorscale for S40RTS
+# psscale -Dx13.3c/-1c+w12c/0.5c+jTC+h+e -C$cpt   -O -K -Ba1f0.5g0.25+l"dVs (%)" >> $outfile.ps
+# For mercator zoom in
+# psscale -Dx9c/-1c+w15c/0.5c+jTC+h+e -C$cpt -O -K -Ba1f0.5g0.25+l"dVs (%)" >> $outfile.ps
+
+# psscale -Dx9c/-1c+w15c/0.5c+jTC+h+e -C$cpt -O -K -Ba5f5g5+l"TX2008.V2.P010 ln(xi) %" >> $outfile.ps
+
+echo '-120 14 1s' | pstext $area $proj -O  -K -N >> $outfile.ps
+echo '-122.5 12 0 1' | psxy $area $proj -O -K -N -Sv0.2 -Gblack -W2p >> $outfile.ps
+
+# Add a legend
+# echo '-90 -90 SKS' | pstext $area $proj -O -X-6.0i -Y0.5i -K -N >> $outfile.ps
+# # echo '-90 -90' | psxy $area $proj -O -K -Y-0.3i -N -Sc0.5 -G${match} -W0.5p >> $outfile.ps
+# echo '-90 -90' | psxy $area $proj -O -K -X-0.4i -Y-0.3i -N -Sc0.5 -G${match} -W0.5p >> $outfile.ps
+# echo '-90 -90 Matching' | pstext $area $proj -O -K -X0.6i -N >> $outfile.ps
+# echo '-90 -90 Discrepant' | pstext $area $proj -O -K -Y-0.3i -N >> $outfile.ps
+# echo '-90 -90' | psxy $area $proj -O -K -X-0.6i -N -Sc0.5 -G${diff} -W0.5p >> $outfile.ps
+# echo '-90 -90' | psxy $area $proj -O -K -Y-0.3i -N -Sc0.5 -Gwhite -W0.5p >> $outfile.ps
+# echo '-90 -90 Null' | pstext $area $proj -X0.6i -N -O -K >> $outfile.ps
+# # #Make legend for Sources
+# echo '-90 -90 SKKS' | pstext $area $proj -O -X9.0i -Y0.9i -K -N >> $outfile.ps
+# # echo '-90 -90' | psxy $area $proj -O -K -X-0.3i -Y-0.3i -N -Sd0.5 -G${match} -W0.5p >> $outfile.ps
+# echo '-90 -90' | psxy $area $proj -O -K -X-0.3i -Y-0.3i -N -Sd0.5 -G${match} -W0.5p >> $outfile.ps
+# echo '-90 -90 Matching' | pstext $area $proj -O -K -X0.6i -N >> $outfile.ps
+# echo '-90 -90 Discrepant' | pstext $area $proj -O -K -Y-0.3i -N >> $outfile.ps
+# echo '-90 -90' | psxy $area $proj -O -K -X-0.6i -N -Sd0.5 -G${diff} -W0.5p >> $outfile.ps
+# echo '-90 -90' | psxy $area $proj -O -K -Y-0.3i -N -Sd0.5 -Gwhite -W0.5p >> $outfile.ps
+# echo '-90 -90 Null' | pstext $area $proj -X0.6i -N -O -K >> $outfile.ps
+
+# echo ">
+#       -165 12
+#       -155 12
+#       " | psxy $area $proj -O -K -W2p,green >> $outfile.ps
+#
+# echo "-165 12" | psxy $area $proj -O -K -W0.25,black -Sc0.3 -Ggreen >> $outfile.ps
+# echo "-155 12" | psxy $area $proj -O -K -W0.25,black -Sd0.3 -Ggreen >> $outfile.ps
+# echo "-140 12 Discrepant SKS - SKKS pair" | pstext $area $proj -O -K -N >> $outfile.ps
+#
+# echo ">
+#       -165 15
+#       -155 15
+#       " | psxy $area $proj -O -K -W2p,black>> $outfile.ps
+#
+# echo "-165 15" | psxy $area $proj -O -K -W0.25,black -Sc0.3 -Gblack >> $outfile.ps
+# echo "-155 15" | psxy $area $proj -O -K -W0.25,black -Sd0.3 -Gblack >> $outfile.ps
+# echo "-140 15 Matching SKS - SKKS pair" | pstext $area $proj -O -K -N >> $outfile.ps
+#
+# echo " -165 21" | psxy $area $proj -O -K -W0.25,black -Sc0.3 -Ggreen >> $outfile.ps
+# echo " -160 21 SKS" | pstext $area $proj -O -K -N >> $outfile.ps
+# echo "-165 18" | psxy $area $proj -O -K -W0.25,black -Sd0.3 -Ggreen >> $outfile.ps
+# echo " -160 18 SKKS" | pstext $area $proj -O -K -N >> $outfile.ps
+#
+# echo " -155 21" | psxy $area $proj -O -K -W0.25,black -Sc0.3 -Gwhite >> $outfile.ps
+# echo " -148 21 Null SKS" | pstext $area $proj -O -K -N >> $outfile.ps
+# echo "-155 18" | psxy $area $proj -O -K -W0.25,black -Sd0.3 -Gwhite >> $outfile.ps
+# echo " -148 18 Null SKKS" | pstext $area $proj -O -K -N >> $outfile.ps
+
+# echo "-150 24" | psxy $area $proj -O -K -W0.25,black -Si0.3 -Gred >> $outfile.ps
+# echo " -144 24 Station" | pstext $area $proj -O -K -N >> $outfile.ps
+
+#Convert outfile to PDF so it will update in the same pane in Preview
+ps2pdf $outfile.ps $outfile.pdf
+open $outfile.pdf
