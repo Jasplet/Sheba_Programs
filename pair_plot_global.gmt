@@ -15,7 +15,7 @@ path=/Users/ja17375/DiscrePy/Sheba
 # Set GMT variables
 # area=-R0/360/-70/70
 # proj=-Jk1:5e8
-outfile=${path}/Figures/Anula_results_${snr}
+outfile=${path}/Figures/${1}_results_${snr}
 
 # makecpt -Cpolar -Ic -T-15/15/0.5 > /Users/ja17375/DiscrePy/Data/tx2008.v2.p010.s_vti_ani.cpt
 cpt=/Users/ja17375/DiscrePy/Data/S40RTS.cpt
@@ -133,8 +133,8 @@ awk '{if ($37 < -0.7) print $45,$44}' ${path}/Results/${file}/${file}_${snr}_dif
 
 # psscale -Dx9c/-1c+w15c/0.5c+jTC+h+e -C$cpt -O -K -Ba5f5g5+l"TX2008.V2.P010 ln(xi) %" >> $outfile.ps
 
-echo '-120 14 1s' | pstext $area $proj -O  -K -N >> $outfile.ps
-echo '-122.5 12 0 1' | psxy $area $proj -O -K -N -Sv0.2 -Gblack -W2p >> $outfile.ps
+# echo '-120 14 1s' | pstext $area $proj -O  -K -N >> $outfile.ps
+# echo '-122.5 12 0 1' | psxy $area $proj -O -K -N -Sv0.2 -Gblack -W2p >> $outfile.ps
 
 # Add a legend
 # echo '-90 -90 SKS' | pstext $area $proj -O -X-6.0i -Y0.5i -K -N >> $outfile.ps
