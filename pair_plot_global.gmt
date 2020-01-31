@@ -10,12 +10,12 @@
 ############# Required Arguements ################
 # Set SNR level
 file=$1
-snr=
+snr=$2
 path=/Users/ja17375/DiscrePy/Sheba
 # Set GMT variables
 area=-R0/360/-70/70
 proj=-Jk1:2e8
-outfile=${path}/Figures/${1}_results_${snr}
+outfile=${path}/Figures/${file}_results_${snr}
 
 cpt=/Users/ja17375/DiscrePy/Data/S40RTS.cpt
 #Plot the Basemap
