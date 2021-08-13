@@ -1,3 +1,4 @@
+#! /bin/bash
 ############# Program: Pair_plot_zoom.gmt ############
 # This program takes an inout filename and SNR level and plots a regional scale view of Results
 # For development this is fixed to the East Pacific.
@@ -10,38 +11,39 @@ function plot_pp {
   area=$2
   proj=$3
   outfile=$4
+  pen=$5
   # Set plotting colours
-  diff=$5 # Green
-  match=$6 # Black
+  diff=black # Green
+  match=black # Black
   null=white # White
   echo $file
   #plot stations
   tail -n +2 ${file}_diffs.pairs | awk '{print $7, $6 }' |\
-      psxy $area $proj -O -K -Si0.3 -Gred -W0.2p >> $outfile.ps
+     gmt psxy $area $proj -O -K -Si0.2 -Gred $pen >> $outfile.ps
   tail -n +2 ${file}_matches.pairs | awk '{print $7, $6 }' |\
-      psxy $area $proj -O -K -Si0.3 -Gred -W0.2p >> $outfile.ps
+     gmt psxy $area $proj -O -K -Si0.2 -Gred $pen >> $outfile.ps
   tail -n +2 ${file}_diffs_null_split.pairs | awk '{print $7, $6 }' |\
-      psxy $area $proj -O -K -Si0.3 -Gred -W0.2p >> $outfile.ps
+     gmt psxy $area $proj -O -K -Si0.2 -Gred $pen >> $outfile.ps
   tail -n +2 ${file}_matches_null_split.pairs | awk '{print $7, $6 }' |\
-      psxy $area $proj -O -K -Si0.2 -Gred -W0.2p >> $outfile.ps
+     gmt psxy $area $proj -O -K -Si0.2 -Gred $pen >> $outfile.ps
   tail -n +2 ${file}_nulls.pairs | awk '{print $7, $6 }' |\
-      psxy $area $proj -O -K -Si0.2 -Gred -W0.2p >> $outfile.ps
+     gmt psxy $area $proj -O -K -Si0.2 -Gred $pen >> $outfile.ps
   #plot events
   # Split Pairs
   tail -n +2 ${file}_diffs.pairs | awk '{print $5, $4 }' |\
-      psxy $area $proj -O -K -Sa0.25 -Gblack -W0.2p >> $outfile.ps
+     gmt psxy $area $proj -O -K -Sa0.25 -Gblack $pen >> $outfile.ps
   tail -n +2 ${file}_matches.pairs | awk '{print $5, $4 }' |\
-      psxy $area $proj -O -K -Sa0.25 -Gblack -W0.2p >> $outfile.ps
+     gmt psxy $area $proj -O -K -Sa0.25 -Gblack $pen >> $outfile.ps
   #Nul SPlit pairs
   tail -n +2 ${file}_diffs.pairs | awk '{print $5, $4 }' |\
-      psxy $area $proj -O -K -Sa0.25 -Gblack -W0.2p >> $outfile.ps
+     gmt psxy $area $proj -O -K -Sa0.25 -Gblack $pen >> $outfile.ps
   tail -n +2 ${file}_matches.pairs | awk '{print $5, $4 }' |\
-      psxy $area $proj -O -K -Sa0.25 -Gblack -W0.2p >> $outfile.ps
+     gmt psxy $area $proj -O -K -Sa0.25 -Gblack $pen >> $outfile.ps
   # psxy $area $proj -O -K -W0.5p,${null} < ${file}_nulls.mspp >> $outfile.ps
   # psxy $area $proj -O -K -W0.5p,${match} < ${file}_matches.mspp >> $outfile.ps
   # psxy $area $proj -O -K -W0.75p,${diff} < ${file}_diffs.mspp >> $outfile.ps
-  psxy $area $proj -O -K -W0.75p,${diff} < ${file}_diffs_null_split.mspp >> $outfile.ps
-  psxy $area $proj -O -K -W0.75p,${match} < ${file}_matches_null_split.mspp >> $outfile.ps
+  gmt psxy $area $proj -O -K -W0.75p,${diff} < ${file}_diffs_null_split.mspp >> $outfile.ps
+  gmt psxy $area $proj -O -K -W0.75p,${match} < ${file}_matches_null_split.mspp >> $outfile.ps
   ## Plot Fast, dt directions on top of Matching pairs
   # awk '{ print $43, $42, $12, $14/2}' ${file}_matches.pairs | psxy $area $proj -O -K -SV0.2 -W1p,${match}  >> $outfile.ps
   # awk '{ print $45, $44, $27, $29/2}' ${file}_matches.pairs | psxy $area $proj -O -K -SV0.2 -W1p,${match}  >> $outfile.ps
@@ -58,30 +60,29 @@ function plot_pp {
   # awk '{if ($37 > 0.5) print $45,$44,$27, $29/2}' ${file}_diffs_null_split.pairs | psxy $area $proj -O -K -SV0.2 -G${diff} -W1p,black >> $outfile.ps
   # awk '{if ($37 > 0.5) print $45,$44,($27+180), $29/2}' ${file}_diffs_null_split.pairs | psxy $area $proj -O -K -SV0.2 -G${diff} -W1p,black >> $outfile.ps
   #Plot Nulls (without phi, dt)
-  # awk '{print $43, $42}' ${file}_nulls.pairs | psxy $area $proj -O -K -Sc0.25 -G${null} -W0.25p,black   >> $outfile.ps
-  # awk '{print $45,$44}' ${file}_nulls.pairs | psxy $area $proj -O -K -Sd0.25  -G${null} -W0.25p,black >> $outfile.ps
+  # awk '{print $43, $42}' ${file}_nulls.pairs | psxy $area $proj -O -K -Sc0.25 -G${null} $pen   >> $outfile.ps
+  # awk '{print $45,$44}' ${file}_nulls.pairs | psxy $area $proj -O -K -Sd0.25  -G${null} $pen >> $outfile.ps
   # Plot Circles centered on SKS, SKKS pierce points (Standard for this sort of plot) - Null-Split Pairs that are Matching
-  awk '{if ($22 > 0.5) print $43, $42}' ${file}_matches_null_split.pairs | psxy $area $proj -O -K -Sc0.25 -G${match} -W0.25p,black   >> $outfile.ps
-  awk '{if ($22 < -0.7) print $43, $42}' ${file}_matches_null_split.pairs | psxy $area $proj -O -K -Sc0.25 -G${null} -W0.25p,black   >> $outfile.ps
-  awk '{if ($37 > 0.5) print $45,$44}' ${file}_matches_null_split.pairs | psxy $area $proj -O -K -Sd0.25 -G${match} -W0.25p,black >> $outfile.ps
-  awk '{if ($37 < -0.7) print $45,$44}' ${file}_matches_null_split.pairs | psxy $area $proj -O -K -Sd0.25 -G${null} -W0.25p,black >> $outfile.ps
+  awk '{if ($22 > 0.5) print $43, $42}' ${file}_matches_null_split.pairs | gmt psxy $area $proj -O -K -Sc0.25 -G${match} $pen   >> $outfile.ps
+  awk '{if ($22 < -0.7) print $43, $42}' ${file}_matches_null_split.pairs | gmt psxy $area $proj -O -K -Sc0.25 -G${null} $pen   >> $outfile.ps
+  awk '{if ($37 > 0.5) print $45,$44}' ${file}_matches_null_split.pairs | gmt psxy $area $proj -O -K -Sd0.25 -G${match} $pen >> $outfile.ps
+  awk '{if ($37 < -0.7) print $45,$44}' ${file}_matches_null_split.pairs | gmt psxy $area $proj -O -K -Sd0.25 -G${null} $pen >> $outfile.ps
   # Plot Circles centered on SKS, SKKS pierce points (Standard for this sort of plot) - Null-Split Pairs that are discrepent
-  awk '{if ($22 > 0.5) print $43, $42}' ${file}_diffs_null_split.pairs | psxy $area $proj -O -K -Sc0.25 -G${diff} -W0.25p,black   >> $outfile.ps
-  awk '{if ($22 < -0.7) print $43, $42}' ${file}_diffs_null_split.pairs | psxy $area $proj -O -K -Sc0.25 -G${null} -W0.25p,black   >> $outfile.ps
-  awk '{if ($37 > 0.5) print $45,$44}' ${file}_diffs_null_split.pairs | psxy $area $proj -O -K -Sd0.25 -G${diff} -W0.25p,black >> $outfile.ps
-  awk '{if ($37 < -0.7) print $45,$44}' ${file}_diffs_null_split.pairs | psxy $area $proj -O -K -Sd0.25 -G${null} -W0.25p,black >> $outfile.ps
+  awk '{if ($22 > 0.5) print $43, $42}' ${file}_diffs_null_split.pairs | gmt psxy $area $proj -O -K -Sc0.25 -G${diff} $pen   >> $outfile.ps
+  awk '{if ($22 < -0.7) print $43, $42}' ${file}_diffs_null_split.pairs | gmt psxy $area $proj -O -K -Sc0.25 -G${null} $pen   >> $outfile.ps
+  awk '{if ($37 > 0.5) print $45,$44}' ${file}_diffs_null_split.pairs | gmt psxy $area $proj -O -K -Sd0.25 -G${diff} $pen >> $outfile.ps
+  awk '{if ($37 < -0.7) print $45,$44}' ${file}_diffs_null_split.pairs | gmt psxy $area $proj -O -K -Sd0.25 -G${null} $pen >> $outfile.ps
   # Plot Circles centered on SKS, SKKS pierce points (Standard for this sort of plot) - Matches
-  # awk '{print $43, $42}' ${file}_matches.pairs | psxy $area $proj -O -K -Sc0.25 -G${match} -W0.25p,black >> $outfile.ps
-  # awk '{print $45,$44}' ${file}_matches.pairs | psxy $area $proj -O -K -Sd0.25 -G${match} -W0.25p,black >> $outfile.ps
+  # awk '{print $43, $42}' ${file}_matches.pairs | psxy $area $proj -O -K -Sc0.25 -G${match} $pen >> $outfile.ps
+  # awk '{print $45,$44}' ${file}_matches.pairs | psxy $area $proj -O -K -Sd0.25 -G${match} $pen >> $outfile.ps
   # Plot Circles centered on SKS, SKKS pierce points (Standard for this sort of plot) - Diffs
-  awk '{print $43, $42}' ${file}_diffs.pairs | psxy $area $proj -O -K -Sc0.25 -G${diff} -W0.25p,black   >> $outfile.ps
-  awk '{print $45,$44}' ${file}_diffs.pairs | psxy $area $proj -O -K -Sd0.25 -G${diff} -W0.25p,black >> $outfile.ps
+  awk '{print $43, $42}' ${file}_diffs.pairs | gmt psxy $area $proj -O -K -Sc0.25 -G${diff} $pen   >> $outfile.ps
+  awk '{print $45,$44}' ${file}_diffs.pairs | gmt psxy $area $proj -O -K -Sd0.25 -G${diff} $pen >> $outfile.ps
 
   }
 # Set SNR level
 file=$1
-file2=$2
-snr=$3
+snr=$2
 path=/Users/ja17375/DiscrePy/Sheba
 # Set GMT variables
 area=-R-170/-80/10/65
@@ -92,6 +93,7 @@ fin1=${path}/Results/${file}/${file}_${snr}
 fin2=${path}/Results/${file2}/${file2}_${snr}
 
 cpt=/Users/ja17375/DiscrePy/Data/S40RTS.cpt
+
 #Plot the Basemap
 psbasemap $proj $area -X5c -Y3c -Bg -BWESN -B40 -K  > $outfile.ps # For global map
 #Plot S40RTS at CMB
@@ -101,8 +103,7 @@ grdimage $proj $area /Users/ja17375/DiscrePy/Data/S40RTS_2800km.grd -C$cpt -O -K
 pscoast $area $proj -Dl -W0.5p -K -O -A1e4 >> $outfile.ps
 
 #Plot file 1 data (Anula)
-plot_pp $fin2 $area $proj $outfile black black
-plot_pp $fin1 $area $proj $outfile green green
+plot_pp $fin1 $area $proj $outfile -W1p,red
 #Convert outfile to PDF so it will update in the same pane in Preview
 ps2pdf $outfile.ps $outfile.pdf
 open $outfile.pdf

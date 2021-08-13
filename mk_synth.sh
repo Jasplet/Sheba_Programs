@@ -56,9 +56,9 @@ function call_sacsplitwave {
     echo $1 $2 $3 $4 $5 $6 #var $5 and $6 are for upper layer if provided
     if [ -z "$5" ]
     then
-      sacsplitwave -op $1 $2 -spol $3 -dfreq 0.1 -noise $4
+      sacsplitwave -op $1 $2 -spol $3 -dfreq 0.125 -noise $4
     else
-      sacsplitwave -op $1 $2 -op $5 $6 -spol $3 -dfreq 0.1 -noise $4
+      sacsplitwave -op $1 $2 -op $5 $6 -spol $3 -dfreq 0.125 -noise $4
     fi
     #Use 0.1 for "low noise", 0.25 for "high" noise and now also add "0.05" for "very low"
 }

@@ -1,0 +1,48 @@
+#! /bin/bash
+############# Program: plot_scs.gmt ############
+# This program takes an inout filename and SNR level and plots a regional scale view of Results
+# For development this is fixed to the East Pacific.
+############# Author: Joseph Asplet ##############
+##################################################
+############# Required Arguements ################
+
+
+path=/Users/ja17375/DiscrePy/Sheba/
+file=${path}Results/ScS/ScS_w_bouncepoints.sdb
+pairs=${path}Results/E_pacific/E_pacific_05.pairs
+
+# Set GMT variables
+area=-R-170/-80/10/65
+proj=-Jm1:5.5e7
+
+outfile=${path}/Figures/E_pacific_ScS
+fin1=${path}/Results/${file}/${file}_${snr}
+fin2=${path}/Results/${file2}/${file2}_${snr}
+
+# cpt=/Users/ja17375/DiscrePy/Data/S40RTS.cpt
+makecpt -Cpolar -Ic -T-10/10/0.5 > /Users/ja17375/DiscrePy/Data/tx2008.v2.p010.s_vti_ani.cpt
+cpt=/Users/ja17375/DiscrePy/Data/tx2008.v2.p010.s_vti_ani.cpt
+#Plot the Basemap
+psbasemap $proj $area -X5c -Y3c  -BWESN -B40 -K  > $outfile.ps # For global map
+#Plot S40RTS at CMB
+
+#Plot Coastline
+#for greyscale use -Ggrey60 -Sgrey75
+pscoast $area $proj -Dl -W0.5p -K -O -A1e4 >> $outfile.ps
+echo $file
+
+#Plot SKS, SKKS
+# awk 'NR >1 {if ($22 > 0.5) print $43, $42}' $pairs | psxy $area $proj -O -K -Sd0.15 -Gblack -W1p,black >> $outfile.ps
+# awk 'NR >1 {if ($22 < -0.5) print $43, $42}' $pairs | psxy $area $proj -O -K -Sd0.15 -Gwhite -W1p,black >> $outfile.ps
+# awk 'NR >1 {if ($37 > 0.5) print $45, $44}' $pairs | psxy $area $proj -O -K -Sc0.15 -Gblack -W1p,black >> $outfile.ps
+# awk 'NR >1 {if ($37 < -0.5) print $45, $44}' $pairs | psxy $area $proj -O -K -Sc0.15 -Gwhite -W1p,black >> $outfile.ps
+# Plot ScS
+awk 'NR>1 {if ($22 > 0.5) print $33,$32,$12, $14/2}' $file | psxy $area $proj -O -K -SV0.2 -W1p,black >> $outfile.ps
+awk 'NR>1 {if ($22 > 0.5) print $33,$32,$12+180, $14/2}' $file | psxy $area $proj -O -K -SV0.2 -W1p,black >> $outfile.ps
+awk 'NR >1 {if ($22 > 0.5) print $33,$32}' $file | psxy $area $proj -O -K -Ss0.2 -Gblack -W1p,black  >> $outfile.ps
+awk 'NR >1 {if ($22 < -0.5) print $33,$32}' $file | psxy $area $proj -O -K -Ss0.2 -Gwhite -W1p,black  >> $outfile.ps
+
+
+#Convert outfile to PDF so it will update in the same pane in Preview
+ps2pdf $outfile.ps $outfile.pdf
+open $outfile.pdf

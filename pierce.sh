@@ -22,8 +22,8 @@ function call_taup_pierce {
   taup_pierce -evt $1 $2 -sta $3 $4 -h $5 -ph $6 -pierce 2889 --nodiscon
 }
 
-echo 'dist time depth lat_SKS lon_SKS' > SKS_hdr
-echo 'dist time depth lat_SKKS lon_SKKS' > SKKS_hdr
+echo 'dist depth time lat_SKS lon_SKS' > SKS_hdr
+echo 'dist depth time lat_SKKS lon_SKKS' > SKKS_hdr
 
 i=1
 echo 'STAT EVLA EVLO STLA STLO EVDP' | awk '{print $3,$4,$5,$6,$7,$8}'
@@ -34,16 +34,16 @@ while read file; do
     echo $file | awk '{print $3,$4,$5,$6,$7,$8}'
     call_taup_pierce $(echo $file |  awk  '{print $4, $5, $6, $7, $8}' ) SKS | grep 2889 | tail -1 > SKS_tmp
 
-    call_taup_pierce $(echo $file |  awk  '{print $4, $5, $6, $7, $8}' ) SKKS | grep 2889 | head -3 | tail -1 > SKKS_tmp
+    #call_taup_pierce $(echo $file |  awk  '{print $4, $5, $6, $7, $8}' ) SKKS | grep 2889 | head -3 | tail -1 > SKKS_tmp
     # For a depth of 2800 we get slight less outputs than a depth of 2889 therefore would use head -2 instead of head -3 we use when pierce depth is 2889
-    cat SKKS_tmp
+    #cat SKKS_tmp
     else
     echo 'Skipping Header Line'
     fi
     let i=i+1
 
     cat SKS_tmp >> SKS
-    cat SKKS_tmp >> SKKS
+    #cat SKKS_tmp >> SKKS
 
     # awk 'BEGIN{print ">"} {print $5, $4}' SKS_tmp >> $INFILE.mspp
     # awk '{print $5, $4}' SKKS_tmp >> $INFILE.mspp
@@ -54,10 +54,11 @@ done < $INFILE
 
 
 cat SKS_hdr SKS > SKS_pierce.pp
-cat SKKS_hdr SKKS > SKKS_pierce.pp
+#cat SKKS_hdr SKKS > SKKS_pierce.pp
 
 echo $OUTFILE.pp
-paste SKS_pierce.pp SKKS_pierce.pp  | awk '{print $5, $4, $10, $9}' > $OUTFILE.pp
+#paste SKS_pierce.pp SKKS_pierce.pp  | awk '{print $5, $4, $10, $9}' > $OUTFILE.pp
+awk '{print $5, $4}' > $OUTFILE.pp
 #awk '{print $1,$2,$3,$4,$5,$6,$7,$8,$12,$13,$14,$15,$25,$26,$27,$28}' $INFILE > tmp
 #paste tmp SKS_SKKS_tmp > SKS_SKKS_pairs.pp
 

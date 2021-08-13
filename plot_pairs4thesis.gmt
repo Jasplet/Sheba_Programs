@@ -1,0 +1,48 @@
+#! /bin/bash
+
+
+snr=$2
+path=/Users/ja17375/DiscrePy/Sheba
+
+file=${path}/Results/Combined/Filt_05Hz/Combined_goodQ
+
+
+# Set GMT variables
+area=-R60/150/10/70
+proj=-JK20c
+# area=-R0/360/-70/70
+# proj=-Jk1:1.8e8
+outfile=/Users/ja17375/Documents/Thesis-enclosing/Thesis/chapters/chapter02/Figs/Easia_SKS_SKKS_s
+split=black
+null=white
+
+cpt=/Users/ja17375/DiscrePy/Data/S40RTS/S40RTS.cpt
+#Plot the Basemap
+gmt psbasemap $proj $area -X4c -Y3c -Bg -BWESN -B20 -K  > $outfile.ps # For global map
+#Plot S40RTS at CMB
+gmt grdimage $proj $area /Users/ja17375/DiscrePy/Data/S40RTS/S40RTS_2800km.grd -C$cpt -O -K >> $outfile.ps
+#Plot Coastline
+#for greyscale use -Ggrey60 -Sgrey75
+gmt pscoast $area $proj -Dl -W0.5p -K -O -A1e4 >> $outfile.ps
+
+gmt psxy $area $proj -O -K -W0.5p,${split} < ${file}.mspp >> $outfile.ps
+# gmt psxy $area $proj -O -K -W0.5p,${null} < ${file}_nulls.mspp >> $outfile.ps
+
+#Draw splitting params
+awk '{if ($22 > 0.5) print $43, $42,$12,$14/2}' ${file}.pairs | gmt psxy $area $proj -O -K -SV0.2 -G${split} -W1p,black   >> $outfile.ps
+awk '{if ($22 > 0.5) print $43, $42,($12+180), $14/2}' ${file}.pairs | gmt psxy $area $proj -O -K -SV0.2 -G${split} -W1p,black   >> $outfile.ps
+awk '{if ($37 > 0.5) print $45,$44,$27, $29/2}' ${file}.pairs | gmt psxy $area $proj -O -K -SV0.2 -G${split} -W1p,black >> $outfile.ps
+awk '{if ($37 > 0.5) print $45,$44,($27+180), $29/2}' ${file}.pairs | gmt psxy $area $proj -O -K -SV0.2 -G${split} -W1p,black >> $outfile.ps
+
+#Plot Splits
+awk '{if ($22 > 0.5) print $43, $42}' ${file}.pairs | gmt psxy $area $proj -O -K -Sc0.25 -G${split} -W0.25p,black   >> $outfile.ps
+awk '{if ($37 > 0.5) print $45, $44}' ${file}.pairs | gmt psxy $area $proj -O -K -Sd0.25  -G${split} -W0.25p,black >> $outfile.ps
+#Plot Nulls
+awk '{if ($22 < -0.5) print $43, $42}' ${file}.pairs | gmt psxy $area $proj -O -K -Sc0.25 -G${null} -W0.25p,black   >> $outfile.ps
+awk '{if ($37 < -0.5) print $45, $44}' ${file}.pairs | gmt psxy $area $proj -O -K -Sd0.25  -G${null} -W0.25p,black >> $outfile.ps
+
+echo '130 20 180 1' | gmt psxy $area $proj -O -K -SV0.2 -W01p,black >> $outfile.ps # Draws a vector of length 1 (scaled units)
+
+gmt psscale -Dx9c/-1c+w15c/0.5c+jTC+h+e -C$cpt -O -K -Ba1f0.5g0.25+l"dVs (%)" >> $outfile.ps
+ps2pdf $outfile.ps $outfile.pdf
+open $outfile.pdf

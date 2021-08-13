@@ -1,0 +1,18 @@
+#! /bin/bash
+## plot_lutz.gmt
+# Plots Lutz 2020 events
+
+area=-R0/360/-70/70
+proj=-Jk1:1.8e8
+outfile=Lutz2020events
+
+#Plot the Basemap
+psbasemap $proj $area -X4c -Y5c -Bg -BWESN -B40 -K  > $outfile.ps # For global map
+pscoast $area $proj -Dl -W0.5p -K -O -A1e4 >> $outfile.ps
+awk '{print $3, $2}' /Users/ja17375/DiscrePy/Data/Lutz_et_al.events |\
+    psxy -O -K $area $proj -Sa0.25 -Gblack -W0.2p >> $outfile.ps
+
+
+ps2pdf $outfile.ps $outfile.pdf
+
+open $outfile.pdf

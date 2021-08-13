@@ -1,0 +1,42 @@
+#! /bin/bash
+############# Program: plot_global_scs.gmt ############
+# This program plots scs data (for a given SNR threshold) 
+# 
+############# Author: Joseph Asplet ##############
+##################################################
+############# User Inputs ################
+##################################################
+data=/Users/ja17375/SWSTomo/BlueCrystal/Jacks_Final_ScS_overlap.rdb
+opath=/Users/ja17375/Documents/Thesis-enclosing/Thesis/chapters/chapter02/Figs
+
+##################################################
+# Set GMT variables
+area=-R0/360/-70/70
+proj=-Jk1:1.8e8
+outfile=${opath}/Global_ScS
+null=white
+split=black
+
+cpt=/Users/ja17375/DiscrePy/Data/S40RTS/S40RTS.cpt
+#Plot the Basemap
+gmt psbasemap $proj $area -X4c -Y5c -Bg -BWESN -B40 -K  > $outfile.ps # For global map
+#Plot S40RTS at CMB
+#gmt grdimage $proj $area /Users/ja17375/DiscrePy/Data/S40RTS/S40RTS_2800km.grd -C$cpt -O -K >> $outfile.ps
+#Plot Coastline
+gmt pscoast $area $proj -Dl -W0.5p -K -O -A1e4 >> $outfile.ps
+echo "here"
+# plot stations
+# tail -n +2 $data | awk '{print $7, $6 }' |\
+#     gmt psxy $area $proj -O -K -Si0.2 -Gred -W0.2p >> $outfile.ps
+# #plot events
+# tail -n +2 $data | awk '{print $5, $4 }' |\
+#     gmt psxy $area $proj -O -K -Sa0.25 -Gyellow -W0.2p >> $outfile.ps
+
+tail -n +2 $data | awk '{print $33, $32}' |\
+    gmt psxy $area $proj -O -K -Sc0.15 -Gdarkred -W0.25p,black >> $outfile.ps
+
+
+
+#Convert outfile to PDF so it will update in the same pane in Preview
+ps2pdf $outfile.ps $outfile.pdf
+open $outfile.pdf

@@ -1,6 +1,6 @@
 #! /bin/bash
 ################### Program: mk_synth_v2.sh  ######################################
-# This is a program to create synthetic split waveforms for a single fast,dt over a range of noice components
+# This is a program to create synthetic split waveforms for a single fast,dt over a range of signal/noise ratios
 ################################################################################
 
 # Parse arguement
