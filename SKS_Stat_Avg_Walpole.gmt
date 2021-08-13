@@ -1,0 +1,91 @@
+#! /bin/bash
+############# Program: SKS_Stat_Avg_Walpole.gmt ############
+# This program plot the station averaged SKS results from Walpole 2014
+############# Author: Joseph Asplet ##############
+##################################################
+############# Required Arguments ################
+# Set GMT variables
+area=-R-170/-60/-20/65
+proj=-Jm1:6.6e7
+outfile=/Users/ja17375/SWSTomo/Figures/SKS_Station_Averages_Walpole
+cpt=/Users/ja17375/Shear_Wave_Splitting/Data/S40RTS.cpt
+
+#Plot the Basemap
+psbasemap $proj $area -X3c -Y1c -Ba10f10 -BWESN+t -K  > $outfile.ps
+#Plot Coastline
+pscoast $area $proj -Dl -W0.5p -N1  -K -O -A1e4 >> $outfile.ps
+#plot stations
+tail -n +2 /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/${RESDIR}/${FNAME}_matches_l2.pairs | awk '{print $7, $6 }' |\
+    psxy $area $proj -O -K -Si0.2 -Gred -W0.2p >> $outfile.ps
+tail -n +2 /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/${RESDIR}/${FNAME}_diffs_l2.pairs | awk '{print $7, $6 }' |\
+    psxy $area $proj -O -K -Si0.2 -Gred -W0.2p >> $outfile.ps
+tail -n +2 /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/${RESDIR}/${FNAME}_matches_null_split.pairs | awk '{print $7, $6 }' |\
+    psxy $area $proj -O -K -Si0.2 -Gred -W0.2p >> $outfile.ps
+tail -n +2 /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/${RESDIR}/${FNAME}_diffs_null_split.pairs | awk '{print $7, $6 }' |\
+    psxy $area $proj -O -K -Si0.2 -Gred -W0.2p >> $outfile.ps
+# tail -n +2 /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/${RESDIR}/${FNAME}_nulls.pairs | awk '{print $7, $6 }' |\
+#     psxy $area $proj -O -K -Si0.2 -Gred -W0.2p >> $outfile.ps
+## Draw a line between each pair of SKS SKKS exit points
+diff=green
+match=black
+null=white
+# psxy $area $proj -O -K -W0.75p,${match} < /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/${RESDIR}/${FNAME}_nulls.mspp >> $outfile.ps
+# psxy $area $proj -O -K -W0.75p,${match} < /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/${RESDIR}/${FNAME}_matches_null_split.mspp >> $outfile.ps
+# psxy $area $proj -O -K -W0.75p,${diff} < /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/${RESDIR}/${FNAME}_diffs_null_split.mspp >> $outfile.ps
+# psxy $area $proj -O -K -W0.75p,${match} < /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/${RESDIR}/${FNAME}_matches_l2.mspp >> $outfile.ps
+# psxy $area $proj -O -K -W0.75p,${diff} < /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/${RESDIR}/${FNAME}_diffs_l2.mspp >> $outfile.ps
+psxy $area $proj -O -K -W0.75p,${diff} < /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/${RESDIR}/${FNAME}_uID_l2.mspp >> $outfile.ps
+
+
+#Plot Nulls
+# awk '{print $43, $42}' /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/${RESDIR}/${FNAME}_nulls.pairs | psxy $area $proj -O -K -Sc0.25 -G${null} -W0.25p,black   >> $outfile.ps
+# awk '{print $45,$44}' /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/${RESDIR}/${FNAME}_nulls.pairs | psxy $area $proj -O -K -Sd0.25  -G${null} -W0.25p,black >> $outfile.ps
+
+# # Plot Circles centered on SKS, SKKS pierce points (Standard for this sort of plot) - Null-Split Pairs that are Matching
+# awk '{if ($22 > 0.5 && ($6 < 19.33 || $6 > 63.75 || $7 < -123.56 || $7 > -68.55)) print $43, $42}' /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/${RESDIR}/${FNAME}_matches_null_split.pairs | psxy $area $proj -O -K -Sc0.25 -G${match} -W0.25p,black   >> $outfile.ps
+# awk '{if ($22 < -0.7) print $43, $42}' /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/${RESDIR}/${FNAME}_matches_null_split.pairs | psxy $area $proj -O -K -Sc0.25 -G${null} -W0.25p,black   >> $outfile.ps
+# awk '{if ($37 > 0.5) print $45,$44}' /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/${RESDIR}/${FNAME}_matches_null_split.pairs | psxy $area $proj -O -K -Sd0.25 -G${match} -W0.25p,black >> $outfile.ps
+# awk '{if ($37 < -0.7) print $45,$44}' /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/${RESDIR}/${FNAME}_matches_null_split.pairs | psxy $area $proj -O -K -Sd0.25 -G${null} -W0.25p,black >> $outfile.ps
+# # Plot Circles centered on SKS, SKKS pierce points (Standard for this sort of plot) - Null-Split Pairs that are discrepent
+# awk '{if ($22 > 0.5) print $43, $42}' /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/${RESDIR}/${FNAME}_diffs_null_split.pairs | psxy $area $proj -O -K -Sc0.25 -G${diff} -W0.25p,black   >> $outfile.ps
+# awk '{if ($22 < -0.7) print $43, $42}' /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/${RESDIR}/${FNAME}_diffs_null_split.pairs | psxy $area $proj -O -K -Sc0.25 -G${null} -W0.25p,black   >> $outfile.ps
+# awk '{if ($37 > 0.5) print $45,$44}' /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/${RESDIR}/${FNAME}_diffs_null_split.pairs | psxy $area $proj -O -K -Sd0.25 -G${diff} -W0.25p,black >> $outfile.ps
+# awk '{if ($37 < -0.7) print $45,$44}' /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/${RESDIR}/${FNAME}_diffs_null_split.pairs | psxy $area $proj -O -K -Sd0.25 -G${null} -W0.25p,black >> $outfile.ps
+
+# Plot phases from uID pairs where Q <-0.7 or < 0.5 [standalone SKS, SKKS phases]
+awk '{if ($22 > 0.5) print $43, $42}' /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/${RESDIR}/${FNAME}_uID_l2.pairs | psxy $area $proj -O -K -Sc0.25 -Gred -W0.25p,black   >> $outfile.ps
+awk '{if ($22 < -0.7) print $43, $42}' /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/${RESDIR}/${FNAME}_uID_l2.pairs | psxy $area $proj -O -K -Sc0.25 -Gblue -W0.25p,black   >> $outfile.ps
+awk '{if ($37 > 0.5) print $45,$44}' /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/${RESDIR}/${FNAME}_uID_l2.pairs | psxy $area $proj -O -K -Sd0.25 -Gred -W0.25p,black >> $outfile.ps
+awk '{if ($37 < -0.7) print $45,$44}' /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/${RESDIR}/${FNAME}_uID_l2.pairs | psxy $area $proj -O -K -Sd0.25 -Gblue -W0.25p,black >> $outfile.ps
+#
+# ## Plot Circles centered on SKS, SKKS pierce points (Standard for this sort of plot) - Matches
+#   awk '{print $43, $42}' /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/${RESDIR}/${FNAME}_matches_l2.pairs | psxy $area $proj -O -K -Sc0.2 -G${match} >> $outfile.ps
+#   awk '{print $45,$44}' /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/${RESDIR}/${FNAME}_matches_l2.pairs | psxy $area $proj -O -K -Sd0.2 -G${match} >> $outfile.ps
+# ## Plot Circles centered on SKS, SKKS pierce points (Standard for this sort of plot) - Diffs
+#   awk '{print $43, $42}' /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/${RESDIR}/${FNAME}_diffs_l2.pairs | psxy $area $proj -O -K -Sc0.2 -G${diff} -W0.25p   >> $outfile.ps
+#   awk '{print $45,$44}' /Users/ja17375/Shear_Wave_Splitting/Sheba/Results/${RESDIR}/${FNAME}_diffs_l2.pairs | psxy $area $proj -O -K -Sd0.2 -G${diff} -W0.25p >> $outfile.ps
+
+
+
+  echo ">
+        -165 -15
+        -155 -15
+        " | psxy $area $proj -O -K -W2p,black>> $outfile.ps
+
+  echo "-165 -15" | psxy $area $proj -O -K -W0.25,black -Sc0.3 -Gblack >> $outfile.ps
+  echo "-155 -15" | psxy $area $proj -O -K -W0.25,black -Sd0.3 -Gblack >> $outfile.ps
+  echo "-140 -15 Matching SKS - SKKS pair" | pstext $area $proj -O -K -N >> $outfile.ps
+
+  echo " -165 -9" | psxy $area $proj -O -K -W0.25,black -Sc0.3 -Ggreen >> $outfile.ps
+  echo " -160 -9 SKS" | pstext $area $proj -O -K -N >> $outfile.ps
+  echo "-165 -12" | psxy $area $proj -O -K -W0.25,black -Sd0.3 -Ggreen >> $outfile.ps
+  echo " -160 -12 SKKS" | pstext $area $proj -O -K -N >> $outfile.ps
+
+  echo " -155 -9" | psxy $area $proj -O -K -W0.25,black -Sc0.3 -Gwhite >> $outfile.ps
+  echo " -148 -9 Null SKS" | pstext $area $proj -O -K -N >> $outfile.ps
+  echo "-155 -12" | psxy $area $proj -O -K -W0.25,black -Sd0.3 -Gwhite >> $outfile.ps
+  echo " -148 -12 Null SKKS" | pstext $area $proj -O -K -N >> $outfile.ps
+
+#Convert outfile to PDF so it will update in the same pane in Preview
+# ps2pdf $outfile.ps $outfile.pdf
+open $outfile.ps
